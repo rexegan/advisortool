@@ -146,6 +146,7 @@ const SEED: DB = {
   ],
   wholesalers: [
     { id: uid(), name: "American Funds", rep: "John Miller", wholesalerType: "External", phones: [{ id: uid(), type: "Direct", number: "800-421-4120" }], email: "jmiller@americanfunds.com", territory: "TX/OK", category: "Mutual Funds", notes: "Primary equity partner" },
+    { id: uid(), name: "Vanguard", rep: "", wholesalerType: "External", phones: [{ id: uid(), type: "Advisor Services", number: "800-997-2798" }], email: "", territory: "", category: "Mutual Funds", notes: "" },
     { id: uid(), name: "Nationwide", rep: "Sarah Chen", wholesalerType: "External", phones: [{ id: uid(), type: "Direct", number: "877-245-0763" }, { id: uid(), type: "Cell", number: "214-555-0192" }], email: "schen@nationwide.com", territory: "South", category: "Annuities", notes: "Fixed & variable annuities" },
     { id: uid(), name: "Allianz Life", rep: "Tom Reeves", wholesalerType: "External", phones: [{ id: uid(), type: "Office", number: "763-765-6500" }, { id: uid(), type: "Sales Desk", number: "800-950-5872" }], email: "treeves@allianzlife.com", territory: "TX", category: "Annuities / Life", notes: "Index annuities" },
   ],
