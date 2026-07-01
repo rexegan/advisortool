@@ -164,7 +164,7 @@ const SEED: DB = {
     { id: uid(), designation: "CFP®", fullName: "Certified Financial Planner", issuingBody: "CFP Board", number: "XXXXXX", earned: "2016-11-01", renewalDate: "2026-12-31", ceRequired: "30", notes: "30 CE per 2-year cycle" },
   ],
   contacts: [
-    { id: uid(), name: "Compliance Dept", company: "Russell Wealth Group", role: "Compliance", phone: "555-0100", email: "compliance@russellwealthgroup.com", notes: "ADV filings, trade reviews" },
+    { id: uid(), name: "Compliance Dept", company: "Russell Financial Group", role: "Compliance", phone: "555-0100", email: "compliance@russellfinancialgroup.com", notes: "ADV filings, trade reviews" },
     { id: uid(), name: "Texas DOI", company: "Texas Dept of Insurance", role: "Regulator", phone: "800-252-3439", email: "", notes: "License renewals & complaints" },
     { id: uid(), name: "FINRA BrokerCheck", company: "FINRA", role: "Regulatory", phone: "800-289-9999", email: "", notes: "CRD lookups" },
   ],
@@ -173,8 +173,8 @@ const SEED: DB = {
     { id: uid(), title: "Compliance Reminder", date: "2025-05-15", priority: "medium", body: "Submit outside business activity disclosure by end of month." },
   ],
   advisorProfile: {
-    name: "Rex Russell", title: "Financial Advisor, CFP®", firm: "Russell Wealth Group",
-    crd: "", npn: "", npi: "", email: "rex@russellwealthgroup.com",
+    name: "Rex Russell", title: "Financial Advisor, CFP®", firm: "Russell Financial Group",
+    crd: "", npn: "", npi: "", email: "rex@russellfinancialgroup.com",
     phone: "", address: "", city: "Burleson", state: "TX", zip: "",
     website: "", bio: "",
   },
@@ -1093,7 +1093,7 @@ function SettingsSection({ db, setDb }: { db: DB; setDb: (v: DB) => void }) {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 18, marginTop: 14 }}>
             <SRow label="Full Name"><SInput value={profile.name} onChange={fp("name")} placeholder="Your full name" /></SRow>
             <SRow label="Title / Designation"><SInput value={profile.title} onChange={fp("title")} placeholder="e.g. Financial Advisor, CFP®" /></SRow>
-            <SRow label="Firm Name"><SInput value={profile.firm} onChange={fp("firm")} placeholder="Russell Wealth Group" /></SRow>
+            <SRow label="Firm Name"><SInput value={profile.firm} onChange={fp("firm")} placeholder="Russell Financial Group" /></SRow>
             <SRow label="Website"><SInput value={profile.website} onChange={fp("website")} placeholder="https://..." /></SRow>
           </div>
           <SDivider label="Regulatory IDs" />
@@ -1278,7 +1278,7 @@ export default function AdvisorToolbox() {
 
       <div style={{ background: C.navy800, borderBottom: `1px solid ${C.border}`, padding: "20px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: "#ffffff", letterSpacing: "-0.01em", lineHeight: 1.1 }}>Russell Wealth Group</div>
+          <div style={{ fontSize: 22, fontWeight: 800, color: "#ffffff", letterSpacing: "-0.01em", lineHeight: 1.1 }}>Russell Financial Group</div>
           <div style={{ fontSize: 13, color: C.accent, fontWeight: 600, marginTop: 4, letterSpacing: "0.04em" }}>ADVISOR TOOLBOX</div>
         </div>
         <div style={{ textAlign: "right" }}>
