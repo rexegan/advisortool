@@ -45,6 +45,7 @@ export default function App() {
           </div>
         </div>
         <div className="header-right">
+          <a href="/water" className="btn-ghost-link">💧 AquaComply TX</a>
           <span className="trade-count">{filtered.length} of {trades.length} trades</span>
           <button className="btn-secondary" onClick={() => exportCsv(filtered)}>
             ↓ Export CSV

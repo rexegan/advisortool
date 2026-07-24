@@ -143,6 +143,21 @@
 }
 .btn-secondary:hover { background: #eff6ff; }
 
+.btn-ghost-link {
+  height: 36px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  background: #e0f2fe;
+}
+.btn-ghost-link:hover { background: #bae6fd; }
+
 .btn-ghost {
   height: 36px;
   padding: 0 12px;
