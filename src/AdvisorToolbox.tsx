@@ -1267,7 +1267,7 @@ export default function AdvisorToolbox() {
 
   const activeSection = SECTIONS.find(s => s.id === active)!;
   const shortLabels: Record<SectionId, string> = {
-    wholesalers: "Wholesalers & Vendors", bd: "Broker Dealer", fmo: "FMO",
+    wholesalers: "Wholesalers & Vendors", bd: "Broker Dealer", fmo: "My FMO",
     ce_licenses: "CE & Licensing", credentials: "Credentials",
     contacts: "Contacts", settings: "Settings", notes: "Notes", stats: "Overview",
   };
