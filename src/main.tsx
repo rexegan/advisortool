@@ -3,11 +3,14 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 import WaterApp from './WaterApp.tsx'
+import BlueCheck from './bluecheck/BlueCheck.tsx'
 
-const isWater = window.location.pathname.startsWith('/water');
+const path = window.location.pathname;
+const isWater = path.startsWith('/water');
+const isBlueCheck = path.startsWith('/bluecheck');
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    {isWater ? <WaterApp /> : <App />}
+    {isBlueCheck ? <BlueCheck /> : isWater ? <WaterApp /> : <App />}
   </StrictMode>,
 )
