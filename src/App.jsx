@@ -42,7 +42,7 @@ const today = () => new Date().toISOString().slice(0, 10);
 const SECTIONS = [
   { id: "wholesalers", label: "Wholesalers & Vendors",      icon: "🤝", color: C.accent },
   { id: "bd",          label: "Broker Dealer",              icon: "🏦", color: "#e879f9" },
-  { id: "fmo",         label: "FMO",                        icon: "🌐", color: "#38bdf8" },
+  { id: "fmo",         label: "My FMO",                        icon: "🌐", color: "#38bdf8" },
   { id: "ce_licenses", label: "CE & Licensing",             icon: "🎓", color: C.gold },
   { id: "credentials", label: "Credentials & Designations", icon: "🏅", color: C.purple },
   { id: "contacts",    label: "Key Contacts",               icon: "📞", color: C.teal },
@@ -1285,7 +1285,7 @@ export default function AdvisorToolbox() {
           {SECTIONS.map(s => {
             const isActive = active === s.id;
             const shortLabels = {
-              wholesalers: "Wholesalers & Vendors", bd: "Broker Dealer", fmo: "FMO",
+              wholesalers: "Wholesalers & Vendors", bd: "Broker Dealer", fmo: "My FMO",
               ce_licenses: "CE & Licensing", credentials: "Credentials",
               contacts: "Contacts", settings: "Settings", notes: "Notes", stats: "Overview"
             };
