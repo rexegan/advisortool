@@ -1280,7 +1280,7 @@ export default function AdvisorToolbox() {
         </div>
       </div>
 
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 20px" }}>
+      <div style={{ maxWidth: 1500, margin: "0 auto", padding: "28px 32px" }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6, marginBottom: 28, background: C.navy800, padding: 6, borderRadius: 12, border: `1px solid ${C.border}` }}>
           {SECTIONS.map(s => {
             const isActive = active === s.id;
