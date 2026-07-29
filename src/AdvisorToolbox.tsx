@@ -3,11 +3,11 @@ import type { ReactNode } from "react";
 
 // ── Design tokens ─────────────────────────────────────────────────────────────
 const C = {
-  navy900: "#0a0f1e",
-  navy800: "#0d1528",
-  navy700: "#111d35",
-  navy600: "#162244",
-  navy500: "#1e2f58",
+  navy900: "#1a2744",
+  navy800: "#1f2f52",
+  navy700: "#243660",
+  navy600: "#2a3d6e",
+  navy500: "#30467c",
   accent:  "#4f8ef7",
   accentHover: "#3a7ae8",
   gold:    "#c9a84c",
@@ -16,11 +16,11 @@ const C = {
   orange:  "#fb923c",
   purple:  "#a78bfa",
   teal:    "#2dd4bf",
-  text:    "#e8eaf0",
-  muted:   "#7a8299",
-  border:  "rgba(255,255,255,0.07)",
-  card:    "rgba(255,255,255,0.04)",
-  cardHov: "rgba(255,255,255,0.07)",
+  text:    "#f0f3fa",
+  muted:   "#8fa3c8",
+  border:  "rgba(255,255,255,0.10)",
+  card:    "rgba(255,255,255,0.06)",
+  cardHov: "rgba(255,255,255,0.10)",
 };
 
 const styles = `
