@@ -2,24 +2,24 @@ import { useState } from "react";
 
 // ── Design tokens ─────────────────────────────────────────────────────────────
 const C = {
-  navy900: "#0a0f1e",
-  navy800: "#0d1528",
-  navy700: "#111d35",
-  navy600: "#162244",
-  navy500: "#1e2f58",
-  accent:  "#4f8ef7",
-  accentHover: "#3a7ae8",
-  gold:    "#c9a84c",
-  green:   "#34d399",
-  red:     "#f87171",
-  orange:  "#fb923c",
-  purple:  "#a78bfa",
-  teal:    "#2dd4bf",
-  text:    "#e8eaf0",
-  muted:   "#7a8299",
-  border:  "rgba(255,255,255,0.07)",
-  card:    "rgba(255,255,255,0.04)",
-  cardHov: "rgba(255,255,255,0.07)",
+  navy900: "#f1f4f9",
+  navy800: "#ffffff",
+  navy700: "#f6f8fc",
+  navy600: "#e9eef6",
+  navy500: "#d3dbe8",
+  accent:  "#2563eb",
+  accentHover: "#1d4ed8",
+  gold:    "#a97e14",
+  green:   "#059669",
+  red:     "#dc2626",
+  orange:  "#ea580c",
+  purple:  "#7c3aed",
+  teal:    "#0d9488",
+  text:    "#111a2e",
+  muted:   "#55607a",
+  border:  "rgba(15,23,42,0.12)",
+  card:    "#ffffff",
+  cardHov: "#f6f8fc",
 };
 
 const styles = `
@@ -41,14 +41,14 @@ const today = () => new Date().toISOString().slice(0, 10);
 // ── Section config ────────────────────────────────────────────────────────────
 const SECTIONS = [
   { id: "wholesalers", label: "Wholesalers & Vendors",      icon: "🤝", color: C.accent },
-  { id: "bd",          label: "Broker Dealer",              icon: "🏦", color: "#e879f9" },
-  { id: "fmo",         label: "My FMO",                        icon: "🌐", color: "#38bdf8" },
+  { id: "bd",          label: "Broker Dealer",              icon: "🏦", color: "#c026d3" },
+  { id: "fmo",         label: "My FMO",                        icon: "🌐", color: "#0284c7" },
   { id: "ce_licenses", label: "CE & Licensing",             icon: "🎓", color: C.gold },
   { id: "credentials", label: "Credentials & Designations", icon: "🏅", color: C.purple },
   { id: "contacts",    label: "Key Contacts",               icon: "📞", color: C.teal },
   { id: "settings",    label: "Settings",                   icon: "⚙️", color: "#64748b" },
   { id: "notes",       label: "Advisor Notes",              icon: "📝", color: C.orange },
-  { id: "stats",       label: "Practice Overview",          icon: "📊", color: "#94a3b8" },
+  { id: "stats",       label: "Practice Overview",          icon: "📊", color: "#64748b" },
 ];
 
 // ── Seed data ─────────────────────────────────────────────────────────────────
@@ -1271,7 +1271,7 @@ export default function AdvisorToolbox() {
 
       <div style={{ background: C.navy800, borderBottom: `1px solid ${C.border}`, padding: "20px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: "#ffffff", letterSpacing: "-0.01em", lineHeight: 1.1 }}>Russell Wealth Group</div>
+          <div style={{ fontSize: 22, fontWeight: 800, color: C.text, letterSpacing: "-0.01em", lineHeight: 1.1 }}>Russell Wealth Group</div>
           <div style={{ fontSize: 13, color: C.accent, fontWeight: 600, marginTop: 4, letterSpacing: "0.04em" }}>ADVISOR TOOLBOX</div>
         </div>
         <div style={{ textAlign: "right" }}>
