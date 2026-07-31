@@ -1,5 +1,5 @@
-import AdvisorToolbox from './AdvisorToolbox';
+import TradeBlotter from './TradeBlotter';
 
 export default function App() {
-  return <AdvisorToolbox />;
+  return <TradeBlotter />;
 }
