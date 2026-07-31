@@ -1,386 +1,340 @@
-import { useState, useMemo } from "react";
-import type { ReactNode } from "react";
+import { useState } from "react";
 
-// ── Design tokens — light & bright ────────────────────────────────────────────
 const C = {
-  bg:        "#f4f6fb",
-  surface:   "#ffffff",
-  surfaceAlt:"#f8fafd",
-  border:    "#dde3ef",
-  navy:      "#1a3260",
-  navyLight: "#2a4a8a",
-  accent:    "#2563eb",
-  accentLt:  "#eff4ff",
-  text:      "#111827",
-  textMid:   "#374151",
-  muted:     "#6b7280",
-  green:     "#16a34a",
-  greenLt:   "#f0fdf4",
-  red:       "#dc2626",
-  redLt:     "#fef2f2",
-  gold:      "#b45309",
-  goldLt:    "#fffbeb",
-  purple:    "#7c3aed",
-  purpleLt:  "#f5f3ff",
-  sky:       "#0284c7",
-  skyLt:     "#f0f9ff",
-  orange:    "#ea580c",
-  orangeLt:  "#fff7ed",
-  teal:      "#0d9488",
-  tealLt:    "#f0fdfa",
+  bg:          "#f4f6fb",
+  surface:     "#ffffff",
+  surfaceAlt:  "#f9fafb",
+  border:      "#dde3ef",
+  borderMid:   "#c8d0e0",
+  navy:        "#1a3260",
+  navyHdr:     "#1e3a70",
+  accent:      "#2563eb",
+  text:        "#111827",
+  textMid:     "#374151",
+  muted:       "#6b7280",
+  green:       "#16a34a",
+  red:         "#dc2626",
+  // Group header colors
+  curBg:       "#dbeafe",  curText: "#1e40af",   // Current Investment — blue
+  newBg:       "#ede9fe",  newText: "#5b21b6",   // New Investment — purple
+  postBg:      "#d1fae5",  postText: "#065f46",  // Settlement — green
 };
 
-// ── Types ──────────────────────────────────────────────────────────────────────
-type ProductType =
-  | "Mutual Fund" | "Variable Annuity" | "Fixed Index Annuity"
-  | "Fixed Annuity" | "Life Insurance" | "Stock / ETF" | "Bond"
-  | "REIT" | "Oil & Gas" | "Alternative Investment" | "Other";
+// ── Column definitions ────────────────────────────────────────────────────────
+type Group = "client" | "current" | "new" | "post";
+type CellType = "date" | "text" | "select" | "currency";
 
-type TxType =
-  | "Purchase" | "Sale" | "1035 Exchange" | "Rollover / Transfer"
-  | "Surrender" | "Death Benefit" | "Systematic Withdrawal"
-  | "Premium Payment" | "Reallocation" | "Other";
-
-type TxStatus =
-  | "Pending" | "Submitted" | "In Review" | "Approved"
-  | "Issued / Funded" | "Declined" | "Cancelled";
-
-interface Trade {
-  id: string;
-  client: string;
-  account: string;
-  carrier: string;
-  product: string;
-  productType: ProductType;
-  txType: TxType;
-  amount: string;
-  submittedDate: string;
-  status: TxStatus;
-  advisor: string;
-  notes: string;
+interface Col {
+  key:   string;
+  label: string;
+  group: Group;
+  type:  CellType;
+  w:     number;
+  opts?: string[];
 }
+
+const COLS: Col[] = [
+  // Client identity
+  { key: "entryDate",           label: "Date",                  group: "client",  type: "date",     w: 128 },
+  { key: "lastName",            label: "Last Name",             group: "client",  type: "text",     w: 112 },
+  { key: "mi",                  label: "MI",                    group: "client",  type: "text",     w: 40  },
+  { key: "firstName",           label: "First Name",            group: "client",  type: "text",     w: 100 },
+  // Current Investment Information
+  { key: "fundsFrom",           label: "Funds Coming From",     group: "current", type: "text",     w: 155 },
+  { key: "curAcctType",         label: "Account Type",          group: "current", type: "text",     w: 118 },
+  { key: "assetClass",          label: "Asset Class",           group: "current", type: "text",     w: 128 },
+  { key: "curPolicyNum",        label: "Policy / Acct #",       group: "current", type: "text",     w: 138 },
+  // New Investment
+  { key: "receivingFirm",       label: "Receiving Firm",        group: "new",     type: "text",     w: 145 },
+  { key: "product",             label: "Product",               group: "new",     type: "text",     w: 145 },
+  { key: "ticker",              label: "Ticker Symbol",         group: "new",     type: "text",     w: 90  },
+  { key: "newAcctType",         label: "Account Type",          group: "new",     type: "text",     w: 118 },
+  { key: "fundingMethod",       label: "Funding Method",        group: "new",     type: "text",     w: 138 },
+  { key: "checkNum",            label: "Check #",               group: "new",     type: "text",     w: 84  },
+  { key: "fboCheck",            label: "FBO Check",             group: "new",     type: "text",     w: 128 },
+  { key: "dateSubmitted",       label: "Date Submitted",        group: "new",     type: "date",     w: 130 },
+  { key: "docsReceived",        label: "Docs Received",         group: "new",     type: "date",     w: 122 },
+  { key: "overnightTracking",   label: "Overnight Tracking #",  group: "new",     type: "text",     w: 162 },
+  { key: "followUp",            label: "Follow-Up",             group: "new",     type: "text",     w: 128 },
+  // Settlement & Tracking
+  { key: "dateFunded",          label: "Date Funded",           group: "post",    type: "date",     w: 122 },
+  { key: "newPolicyNum",        label: "New Policy / Acct #",   group: "post",    type: "text",     w: 152 },
+  { key: "bankDraft",           label: "Bank Draft",            group: "post",    type: "select",   w: 90,  opts: ["", "Yes", "No"] },
+  { key: "startDate",           label: "Start Date",            group: "post",    type: "date",     w: 112 },
+  { key: "monthlyAmount",       label: "Monthly $",             group: "post",    type: "currency", w: 102 },
+  { key: "datePolicyDelivered", label: "Date Policy Delivered", group: "post",    type: "date",     w: 148 },
+  { key: "commissionPaidDate",  label: "Commission Paid Date",  group: "post",    type: "date",     w: 152 },
+  { key: "crmUpdated",          label: "CRM Updated",           group: "post",    type: "date",     w: 120 },
+  { key: "openingAmount",       label: "Opening $ Amount",      group: "post",    type: "currency", w: 136 },
+];
+
+const GROUP_META: Record<Group, { label: string; bg: string; color: string; hdrBg: string }> = {
+  client:  { label: "",                            bg: C.navyHdr,  color: "#fff",      hdrBg: "#1a3260" },
+  current: { label: "Current Investment Information", bg: C.curBg, color: C.curText,   hdrBg: "#bfdbfe" },
+  new:     { label: "New Investment",              bg: C.newBg,    color: C.newText,   hdrBg: "#ddd6fe" },
+  post:    { label: "Settlement & Tracking",       bg: C.postBg,   color: C.postText,  hdrBg: "#a7f3d0" },
+};
+
+// ── Row type & helpers ────────────────────────────────────────────────────────
+type Row = { id: string } & Record<string, string>;
+
+const uid = () => Math.random().toString(36).slice(2, 9);
+
+const blankRow = (): Row => {
+  const r: Row = { id: uid() };
+  for (const c of COLS) r[c.key] = "";
+  r.entryDate = new Date().toISOString().slice(0, 10);
+  return r;
+};
+
+const parseCur = (s: string) => parseFloat((s || "").replace(/[$,]/g, "")) || 0;
+const fmtCur = (n: number) =>
+  n === 0 ? "" : "$" + n.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
 // ── Seed data ─────────────────────────────────────────────────────────────────
-const uid = () => Math.random().toString(36).slice(2, 10);
-
-const SEED: Trade[] = [
-  { id: uid(), client: "Johnson, Michael & Karen", account: "IRA-4821", carrier: "Allianz Life", product: "222+ Accumulation FIA", productType: "Fixed Index Annuity", txType: "Purchase", amount: "$250,000", submittedDate: "2025-06-10", status: "Issued / Funded", advisor: "Rex Russell", notes: "IRA rollover from Fidelity. 10-yr surrender." },
-  { id: uid(), client: "Williams, David", account: "NQ-3302", carrier: "Pacific Life", product: "Pacific Index Choice", productType: "Variable Annuity", txType: "Purchase", amount: "$175,000", submittedDate: "2025-06-18", status: "In Review", advisor: "Rex Russell", notes: "Non-qualified funds. Waiting on suitability approval." },
-  { id: uid(), client: "Martinez, Rosa", account: "ROTH-0091", carrier: "American Funds", product: "Growth Fund of America", productType: "Mutual Fund", txType: "Purchase", amount: "$50,000", submittedDate: "2025-06-20", status: "Issued / Funded", advisor: "Rex Russell", notes: "Roth IRA contribution + rollover." },
-  { id: uid(), client: "Thompson, James", account: "BROK-7741", carrier: "Nationwide", product: "New Heights 9 FIA", productType: "Fixed Index Annuity", txType: "1035 Exchange", amount: "$320,000", submittedDate: "2025-06-22", status: "Submitted", advisor: "Rex Russell", notes: "1035 from old Lincoln annuity. Surrender charge waiver applied." },
-  { id: uid(), client: "Lee, Susan", account: "IRA-5509", carrier: "North American", product: "10-Year MYG Annuity", productType: "Fixed Annuity", txType: "Rollover / Transfer", amount: "$95,000", submittedDate: "2025-06-25", status: "Approved", advisor: "Rex Russell", notes: "Direct rollover from 401(k)." },
-  { id: uid(), client: "Garcia, Robert & Linda", account: "TRUST-1183", carrier: "Transamerica", product: "20-Year Term Life", productType: "Life Insurance", txType: "Purchase", amount: "$2,500/yr", submittedDate: "2025-07-01", status: "In Review", advisor: "Rex Russell", notes: "$2M face amount. Paramedical exam scheduled." },
-  { id: uid(), client: "Chen, William", account: "IRA-8842", carrier: "Hines Real Estate", product: "Hines Real Estate Income Trust", productType: "REIT", txType: "Purchase", amount: "$100,000", submittedDate: "2025-07-05", status: "Pending", advisor: "Rex Russell", notes: "Alternative allocation. Accredited investor confirmed." },
-  { id: uid(), client: "Anderson, Patricia", account: "NQ-6614", carrier: "American Equity", product: "AssetShield 10", productType: "Fixed Index Annuity", txType: "Purchase", amount: "$200,000", submittedDate: "2025-07-08", status: "Submitted", advisor: "Rex Russell", notes: "CDSC-free. Income rider elected." },
-  { id: uid(), client: "Wilson, Thomas", account: "BROK-3390", carrier: "Parker Drilling Partners", product: "2025 Oil & Gas Program", productType: "Oil & Gas", txType: "Purchase", amount: "$50,000", submittedDate: "2025-07-10", status: "Pending", advisor: "Rex Russell", notes: "Tax deduction strategy. Accredited investor." },
-  { id: uid(), client: "Davis, Margaret", account: "IRA-2278", carrier: "Vanguard", product: "Total Stock Market Index", productType: "Mutual Fund", txType: "Reallocation", amount: "$130,000", submittedDate: "2025-07-12", status: "Issued / Funded", advisor: "Rex Russell", notes: "Portfolio rebalance — shifted from bonds to equity." },
+const SEED: Row[] = [
+  {
+    id: uid(), entryDate: "2025-06-10",
+    lastName: "Johnson", mi: "A", firstName: "Michael",
+    fundsFrom: "Fidelity 401(k)", curAcctType: "Traditional IRA", assetClass: "Mutual Funds", curPolicyNum: "FID-482-1921",
+    receivingFirm: "Allianz Life", product: "222+ Accumulation FIA", ticker: "", newAcctType: "IRA Rollover",
+    fundingMethod: "Direct Rollover", checkNum: "", fboCheck: "Michael A. Johnson IRA",
+    dateSubmitted: "2025-06-10", docsReceived: "2025-06-12", overnightTracking: "1Z9F7V380314683874", followUp: "",
+    dateFunded: "2025-06-18", newPolicyNum: "ALZ-2025-443821", bankDraft: "No", startDate: "",
+    monthlyAmount: "", datePolicyDelivered: "2025-06-20", commissionPaidDate: "2025-07-01",
+    crmUpdated: "2025-06-20", openingAmount: "250000",
+  },
+  {
+    id: uid(), entryDate: "2025-06-18",
+    lastName: "Williams", mi: "D", firstName: "David",
+    fundsFrom: "Bank of America", curAcctType: "Non-Qualified", assetClass: "Money Market", curPolicyNum: "",
+    receivingFirm: "Pacific Life", product: "Pacific Index Choice VA", ticker: "", newAcctType: "Non-Qualified Annuity",
+    fundingMethod: "Personal Check", checkNum: "4421", fboCheck: "Pacific Life / David D. Williams",
+    dateSubmitted: "2025-06-18", docsReceived: "2025-06-19", overnightTracking: "", followUp: "Awaiting suitability",
+    dateFunded: "", newPolicyNum: "", bankDraft: "", startDate: "",
+    monthlyAmount: "", datePolicyDelivered: "", commissionPaidDate: "",
+    crmUpdated: "2025-06-19", openingAmount: "175000",
+  },
+  {
+    id: uid(), entryDate: "2025-07-05",
+    lastName: "Garcia", mi: "R", firstName: "Robert",
+    fundsFrom: "Edward Jones Brokerage", curAcctType: "Brokerage Account", assetClass: "Stocks / ETFs", curPolicyNum: "EJ-330-7741",
+    receivingFirm: "American Funds", product: "Growth Fund of America", ticker: "AGTHX", newAcctType: "Traditional IRA",
+    fundingMethod: "ACAT Transfer", checkNum: "", fboCheck: "",
+    dateSubmitted: "2025-07-05", docsReceived: "2025-07-06", overnightTracking: "", followUp: "",
+    dateFunded: "2025-07-14", newPolicyNum: "AF-IRA-20250714", bankDraft: "Yes", startDate: "2025-08-01",
+    monthlyAmount: "500", datePolicyDelivered: "", commissionPaidDate: "2025-07-22",
+    crmUpdated: "2025-07-14", openingAmount: "95000",
+  },
+  {
+    id: uid(), entryDate: "2025-07-10",
+    lastName: "Anderson", mi: "P", firstName: "Patricia",
+    fundsFrom: "Nationwide Annuity", curAcctType: "Non-Qualified Annuity", assetClass: "Fixed Annuity", curPolicyNum: "NW-8821-Q",
+    receivingFirm: "American Equity", product: "AssetShield 10 FIA", ticker: "", newAcctType: "Non-Qualified Annuity",
+    fundingMethod: "1035 Exchange", checkNum: "", fboCheck: "American Equity / Patricia P. Anderson",
+    dateSubmitted: "2025-07-10", docsReceived: "2025-07-11", overnightTracking: "796887878920", followUp: "Surrender charge waiver",
+    dateFunded: "", newPolicyNum: "", bankDraft: "Yes", startDate: "2025-09-01",
+    monthlyAmount: "250", datePolicyDelivered: "", commissionPaidDate: "",
+    crmUpdated: "2025-07-11", openingAmount: "200000",
+  },
 ];
 
-const PRODUCT_TYPES: ProductType[] = [
-  "Mutual Fund","Variable Annuity","Fixed Index Annuity","Fixed Annuity",
-  "Life Insurance","Stock / ETF","Bond","REIT","Oil & Gas","Alternative Investment","Other"
-];
-const TX_TYPES: TxType[] = [
-  "Purchase","Sale","1035 Exchange","Rollover / Transfer","Surrender",
-  "Death Benefit","Systematic Withdrawal","Premium Payment","Reallocation","Other"
-];
-const STATUSES: TxStatus[] = [
-  "Pending","Submitted","In Review","Approved","Issued / Funded","Declined","Cancelled"
-];
+// ── Compute group spans for header row 1 ──────────────────────────────────────
+interface Span { group: Group; start: number; count: number }
+const GROUP_SPANS: Span[] = [];
+let cur: Span = { group: COLS[0].group, start: 0, count: 1 };
+for (let i = 1; i < COLS.length; i++) {
+  if (COLS[i].group === cur.group) cur.count++;
+  else { GROUP_SPANS.push(cur); cur = { group: COLS[i].group, start: i, count: 1 }; }
+}
+GROUP_SPANS.push(cur);
 
-// ── Badges ─────────────────────────────────────────────────────────────────────
-const STATUS_COLORS: Record<TxStatus, { bg: string; color: string }> = {
-  "Pending":         { bg: C.goldLt,   color: C.gold   },
-  "Submitted":       { bg: C.skyLt,    color: C.sky    },
-  "In Review":       { bg: C.purpleLt, color: C.purple },
-  "Approved":        { bg: C.accentLt, color: C.accent },
-  "Issued / Funded": { bg: C.greenLt,  color: C.green  },
-  "Declined":        { bg: C.redLt,    color: C.red    },
-  "Cancelled":       { bg: "#f3f4f6",  color: C.muted  },
+// ── Styles ────────────────────────────────────────────────────────────────────
+const TH: React.CSSProperties = {
+  position: "sticky", top: 0, zIndex: 3,
+  padding: "7px 8px", textAlign: "left",
+  borderRight: `1px solid ${C.borderMid}`, borderBottom: `1px solid ${C.borderMid}`,
+  whiteSpace: "nowrap", userSelect: "none",
+};
+const TH2: React.CSSProperties = {
+  ...TH, top: 34, zIndex: 2,
+  fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em",
+};
+const TD: React.CSSProperties = {
+  padding: 0, borderRight: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}`,
+  height: 34, verticalAlign: "middle",
+};
+const INPUT_BASE: React.CSSProperties = {
+  width: "100%", height: "100%", padding: "5px 8px",
+  border: "none", background: "transparent",
+  fontSize: 12, color: C.text, fontFamily: "inherit", outline: "none",
+  boxSizing: "border-box",
 };
 
-const PRODUCT_COLORS: Partial<Record<ProductType, { bg: string; color: string }>> = {
-  "Mutual Fund":           { bg: C.accentLt,  color: C.accent   },
-  "Variable Annuity":      { bg: C.purpleLt,  color: C.purple   },
-  "Fixed Index Annuity":   { bg: C.skyLt,     color: C.sky      },
-  "Fixed Annuity":         { bg: C.tealLt,    color: C.teal     },
-  "Life Insurance":        { bg: C.greenLt,   color: C.green    },
-  "Stock / ETF":           { bg: C.accentLt,  color: C.navyLight},
-  "Bond":                  { bg: "#f3f4f6",   color: C.textMid  },
-  "REIT":                  { bg: C.orangeLt,  color: C.orange   },
-  "Oil & Gas":             { bg: C.goldLt,    color: C.gold     },
-  "Alternative Investment":{ bg: C.redLt,     color: "#9f1239"  },
-  "Other":                 { bg: "#f3f4f6",   color: C.muted    },
-};
-
-function Badge({ children, bg, color }: { children: ReactNode; bg: string; color: string }) {
-  return (
-    <span style={{ background: bg, color, borderRadius: 99, padding: "2px 10px", fontSize: 11, fontWeight: 600, whiteSpace: "nowrap" }}>
-      {children}
-    </span>
-  );
-}
-
-function StatusBadge({ status }: { status: TxStatus }) {
-  const s = STATUS_COLORS[status];
-  return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 5, background: s.bg, color: s.color, borderRadius: 99, padding: "3px 10px", fontSize: 11, fontWeight: 600 }}>
-      <span style={{ width: 6, height: 6, borderRadius: "50%", background: s.color }} />
-      {status}
-    </span>
-  );
-}
-
-// ── Summary stats ─────────────────────────────────────────────────────────────
-function SummaryBar({ trades }: { trades: Trade[] }) {
-  const by = (s: TxStatus) => trades.filter(t => t.status === s).length;
-  const stats = [
-    { label: "Total",            value: trades.length,                                            color: C.navy   },
-    { label: "Issued / Funded",  value: by("Issued / Funded"),                                   color: C.green  },
-    { label: "In Progress",      value: by("Submitted") + by("In Review") + by("Approved"),      color: C.accent },
-    { label: "Pending",          value: by("Pending"),                                            color: C.gold   },
-    { label: "Declined / Cancelled", value: by("Declined") + by("Cancelled"),                    color: C.red    },
-  ];
-  return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 12, marginBottom: 24 }}>
-      {stats.map(s => (
-        <div key={s.label} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: "14px 18px", borderTop: `3px solid ${s.color}` }}>
-          <div style={{ fontSize: 28, fontWeight: 700, color: s.color }}>{s.value}</div>
-          <div style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>{s.label}</div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ── Add / Edit modal ───────────────────────────────────────────────────────────
-const BLANK: Omit<Trade, "id"> = {
-  client: "", account: "", carrier: "", product: "",
-  productType: "Mutual Fund", txType: "Purchase",
-  amount: "", submittedDate: new Date().toISOString().slice(0, 10),
-  status: "Pending", advisor: "Rex Russell", notes: "",
-};
-
-function TradeModal({ trade, onSave, onClose }: { trade: Partial<Trade>; onSave: (t: Trade) => void; onClose: () => void }) {
-  const [form, setForm] = useState<Omit<Trade, "id">>({ ...BLANK, ...trade });
-  const set = (k: keyof typeof form) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
-      setForm(f => ({ ...f, [k]: e.target.value }));
-
-  const inp: React.CSSProperties = {
-    width: "100%", padding: "8px 12px", border: `1.5px solid ${C.border}`,
-    borderRadius: 7, fontSize: 14, color: C.text, background: C.surface,
-    outline: "none", fontFamily: "inherit",
-  };
-  const lbl: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: C.textMid, marginBottom: 4, display: "block" };
-
-  const Row = ({ children }: { children: ReactNode }) => (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>{children}</div>
-  );
-  const F = ({ label, children }: { label: string; children: ReactNode }) => (
-    <div><label style={lbl}>{label}</label>{children}</div>
-  );
-
-  return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.35)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ background: C.surface, borderRadius: 14, width: 680, maxHeight: "90vh", overflow: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.18)" }}>
-        <div style={{ padding: "20px 24px", borderBottom: `1px solid ${C.border}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontWeight: 700, fontSize: 17, color: C.navy }}>{(trade as Trade).id ? "Edit Transaction" : "New Transaction"}</span>
-          <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: C.muted, lineHeight: 1 }}>×</button>
-        </div>
-        <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 14 }}>
-          <Row>
-            <F label="Client Name"><input style={inp} value={form.client} onChange={set("client")} placeholder="Last, First" /></F>
-            <F label="Account #"><input style={inp} value={form.account} onChange={set("account")} placeholder="IRA-XXXX" /></F>
-          </Row>
-          <Row>
-            <F label="Carrier / Company"><input style={inp} value={form.carrier} onChange={set("carrier")} placeholder="e.g. Allianz, Vanguard" /></F>
-            <F label="Product Name"><input style={inp} value={form.product} onChange={set("product")} placeholder="e.g. 222+ FIA" /></F>
-          </Row>
-          <Row>
-            <F label="Product Type">
-              <select style={inp} value={form.productType} onChange={set("productType")}>
-                {PRODUCT_TYPES.map(p => <option key={p}>{p}</option>)}
-              </select>
-            </F>
-            <F label="Transaction Type">
-              <select style={inp} value={form.txType} onChange={set("txType")}>
-                {TX_TYPES.map(t => <option key={t}>{t}</option>)}
-              </select>
-            </F>
-          </Row>
-          <Row>
-            <F label="Amount / Premium"><input style={inp} value={form.amount} onChange={set("amount")} placeholder="$0" /></F>
-            <F label="Date Submitted"><input style={inp} type="date" value={form.submittedDate} onChange={set("submittedDate")} /></F>
-          </Row>
-          <Row>
-            <F label="Status">
-              <select style={inp} value={form.status} onChange={set("status")}>
-                {STATUSES.map(s => <option key={s}>{s}</option>)}
-              </select>
-            </F>
-            <F label="Advisor"><input style={inp} value={form.advisor} onChange={set("advisor")} /></F>
-          </Row>
-          <F label="Notes">
-            <textarea style={{ ...inp, height: 72, resize: "vertical" }} value={form.notes} onChange={set("notes")} />
-          </F>
-        </div>
-        <div style={{ padding: "16px 24px", borderTop: `1px solid ${C.border}`, display: "flex", justifyContent: "flex-end", gap: 10 }}>
-          <button onClick={onClose} style={{ padding: "8px 20px", borderRadius: 7, border: `1.5px solid ${C.border}`, background: C.surface, color: C.textMid, fontSize: 14, cursor: "pointer", fontWeight: 500 }}>Cancel</button>
-          <button onClick={() => onSave({ ...form, id: (trade as Trade).id || uid() })}
-            style={{ padding: "8px 22px", borderRadius: 7, border: "none", background: C.accent, color: "#fff", fontSize: 14, cursor: "pointer", fontWeight: 600 }}>
-            Save Transaction
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ── Main ───────────────────────────────────────────────────────────────────────
+// ── Main component ────────────────────────────────────────────────────────────
 export default function TradeBlotter() {
-  const [trades, setTrades] = useState<Trade[]>(SEED);
-  const [modal, setModal] = useState<Partial<Trade> | null>(null);
-  const [search, setSearch] = useState("");
-  const [filterProduct, setFilterProduct] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
-  const [filterTx, setFilterTx] = useState("");
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [rows, setRows] = useState<Row[]>(SEED);
 
-  const filtered = useMemo(() => trades.filter(t => {
-    const q = search.toLowerCase();
-    if (q && ![t.client, t.carrier, t.product, t.account].some(v => v.toLowerCase().includes(q))) return false;
-    if (filterProduct && t.productType !== filterProduct) return false;
-    if (filterStatus && t.status !== filterStatus) return false;
-    if (filterTx && t.txType !== filterTx) return false;
-    return true;
-  }), [trades, search, filterProduct, filterStatus, filterTx]);
-
-  const save = (t: Trade) => {
-    setTrades(ts => ts.some(x => x.id === t.id) ? ts.map(x => x.id === t.id ? t : x) : [t, ...ts]);
-    setModal(null);
-  };
-  const del = (id: string) => { if (confirm("Delete this transaction?")) setTrades(ts => ts.filter(t => t.id !== id)); };
-
-  const sel: React.CSSProperties = {
-    padding: "7px 12px", border: `1.5px solid ${C.border}`, borderRadius: 7,
-    fontSize: 13, color: C.textMid, background: C.surface, cursor: "pointer", fontFamily: "inherit",
+  const update = (id: string, key: string, val: string) =>
+    setRows(rs => rs.map(r => r.id === id ? { ...r, [key]: val } : r));
+  const addRow = () => setRows(rs => [...rs, blankRow()]);
+  const delRow = (id: string) => {
+    if (confirm("Delete this row?")) setRows(rs => rs.filter(r => r.id !== id));
   };
 
-  const cols = "1.8fr 0.9fr 1.5fr 1.4fr 1fr 1fr 1.2fr 80px";
+  const monthlyTotal = rows.reduce((s, r) => s + parseCur(r.monthlyAmount), 0);
+  const ytdTotal = rows.reduce((s, r) => s + parseCur(r.openingAmount), 0);
+  const tableWidth = COLS.reduce((s, c) => s + c.w, 0) + 44;
+
+  const renderCell = (row: Row, col: Col) => {
+    const val = row[col.key] ?? "";
+    if (col.type === "select") {
+      return (
+        <select value={val} onChange={e => update(row.id, col.key, e.target.value)}
+          style={{ ...INPUT_BASE, cursor: "pointer" }}>
+          {(col.opts ?? []).map(o => <option key={o} value={o}>{o || "—"}</option>)}
+        </select>
+      );
+    }
+    return (
+      <input
+        type={col.type === "date" ? "date" : "text"}
+        value={val}
+        onChange={e => update(row.id, col.key, e.target.value)}
+        style={INPUT_BASE}
+      />
+    );
+  };
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg, fontFamily: "'Inter','Segoe UI',system-ui,sans-serif", color: C.text }}>
+    <div style={{ minHeight: "100vh", background: C.bg, fontFamily: "'Inter','Segoe UI',system-ui,sans-serif" }}>
 
-      {/* Header */}
-      <header style={{ background: C.navy, color: "#fff", padding: "0 32px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: "0 2px 12px rgba(0,0,0,0.15)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <div style={{ background: C.accent, borderRadius: 10, width: 38, height: 38, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>📋</div>
+      {/* App header */}
+      <header style={{ background: C.navy, color: "#fff", padding: "0 24px", height: 58, display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: "0 2px 10px rgba(0,0,0,0.18)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ background: C.accent, borderRadius: 8, width: 34, height: 34, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>📋</div>
           <div>
-            <div style={{ fontWeight: 700, fontSize: 17 }}>Transaction Blotter</div>
+            <div style={{ fontWeight: 700, fontSize: 16 }}>Transaction Blotter</div>
             <div style={{ fontSize: 11, opacity: 0.6 }}>Russell Financial Group</div>
           </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <span style={{ fontSize: 13, opacity: 0.7 }}>{filtered.length} of {trades.length} transactions</span>
-          <button onClick={() => setModal({})} style={{ background: C.accent, color: "#fff", border: "none", borderRadius: 8, padding: "8px 18px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
-            + New Transaction
-          </button>
-        </div>
+        <button onClick={addRow} style={{ background: C.accent, color: "#fff", border: "none", borderRadius: 7, padding: "7px 18px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+          + New Transaction
+        </button>
       </header>
 
-      <main style={{ padding: "28px 32px", maxWidth: 1500, margin: "0 auto" }}>
-        <SummaryBar trades={trades} />
-
-        {/* Filters */}
-        <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: "14px 18px", marginBottom: 20, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
-          <input value={search} onChange={e => setSearch(e.target.value)}
-            placeholder="Search client, carrier, product, account..."
-            style={{ ...sel, flex: "1 1 240px" }} />
-          <select style={sel} value={filterProduct} onChange={e => setFilterProduct(e.target.value)}>
-            <option value="">All Product Types</option>
-            {PRODUCT_TYPES.map(p => <option key={p}>{p}</option>)}
-          </select>
-          <select style={sel} value={filterTx} onChange={e => setFilterTx(e.target.value)}>
-            <option value="">All Transaction Types</option>
-            {TX_TYPES.map(t => <option key={t}>{t}</option>)}
-          </select>
-          <select style={sel} value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
-            <option value="">All Statuses</option>
-            {STATUSES.map(s => <option key={s}>{s}</option>)}
-          </select>
-          {(search || filterProduct || filterStatus || filterTx) && (
-            <button onClick={() => { setSearch(""); setFilterProduct(""); setFilterStatus(""); setFilterTx(""); }}
-              style={{ ...sel, color: C.red, borderColor: C.red, background: C.redLt }}>
-              Clear Filters
-            </button>
-          )}
+      {/* Totals bar */}
+      <div style={{ background: C.surface, borderBottom: `1px solid ${C.border}`, padding: "11px 24px", display: "flex", gap: 40, alignItems: "center" }}>
+        <div>
+          <div style={{ fontSize: 10, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>Monthly Draft Total</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: C.green, marginTop: 1 }}>{fmtCur(monthlyTotal) || "—"}</div>
         </div>
-
-        {/* Table */}
-        <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, overflow: "hidden", boxShadow: "0 1px 8px rgba(0,0,0,0.05)" }}>
-          <div style={{ display: "grid", gridTemplateColumns: cols, padding: "10px 18px", background: C.surfaceAlt, borderBottom: `1px solid ${C.border}`, fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-            <span>Client / Account</span><span>Date</span><span>Carrier / Product</span>
-            <span>Product Type</span><span>Tx Type</span><span>Amount</span><span>Status</span><span></span>
-          </div>
-
-          {filtered.length === 0 && (
-            <div style={{ padding: "52px 0", textAlign: "center", color: C.muted, fontSize: 15 }}>No transactions found.</div>
-          )}
-
-          {filtered.map((t, i) => {
-            const pc = PRODUCT_COLORS[t.productType] ?? { bg: "#f3f4f6", color: C.muted };
-            const expanded = expandedId === t.id;
-            return (
-              <div key={t.id} style={{ borderBottom: i < filtered.length - 1 ? `1px solid ${C.border}` : "none" }}>
-                <div
-                  style={{ display: "grid", gridTemplateColumns: cols, padding: "13px 18px", alignItems: "center", cursor: "pointer" }}
-                  onMouseEnter={e => (e.currentTarget.style.background = C.surfaceAlt)}
-                  onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
-                  onClick={() => setExpandedId(expanded ? null : t.id)}
-                >
-                  <div>
-                    <div style={{ fontWeight: 600, fontSize: 14, color: C.navy }}>{t.client}</div>
-                    <div style={{ fontSize: 11, color: C.muted, marginTop: 1 }}>{t.account}</div>
-                  </div>
-                  <div style={{ fontSize: 13, color: C.textMid }}>{t.submittedDate}</div>
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 500 }}>{t.carrier}</div>
-                    <div style={{ fontSize: 11, color: C.muted, marginTop: 1 }}>{t.product}</div>
-                  </div>
-                  <div><Badge bg={pc.bg} color={pc.color}>{t.productType}</Badge></div>
-                  <div style={{ fontSize: 12, color: C.textMid }}>{t.txType}</div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: C.navy }}>{t.amount}</div>
-                  <div><StatusBadge status={t.status} /></div>
-                  <div style={{ display: "flex", gap: 6, justifyContent: "flex-end" }} onClick={e => e.stopPropagation()}>
-                    <button onClick={() => setModal(t)} style={{ background: C.accentLt, color: C.accent, border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 12, cursor: "pointer", fontWeight: 500 }}>Edit</button>
-                    <button onClick={() => del(t.id)} style={{ background: C.redLt, color: C.red, border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 12, cursor: "pointer" }}>✕</button>
-                  </div>
-                </div>
-
-                {expanded && (
-                  <div style={{ padding: "12px 18px 16px", background: C.surfaceAlt, borderTop: `1px solid ${C.border}` }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16, marginBottom: t.notes ? 10 : 0 }}>
-                      {[["ADVISOR", t.advisor], ["TX TYPE", t.txType], ["PRODUCT", t.product]].map(([label, val]) => (
-                        <div key={label}><div style={{ fontSize: 11, color: C.muted, fontWeight: 700 }}>{label}</div><div style={{ fontSize: 13, marginTop: 3 }}>{val}</div></div>
-                      ))}
-                    </div>
-                    {t.notes && (
-                      <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 7, padding: "8px 12px", fontSize: 13, color: C.textMid }}>{t.notes}</div>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+        <div style={{ width: 1, height: 36, background: C.border }} />
+        <div>
+          <div style={{ fontSize: 10, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>YTD New Money</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: C.navy, marginTop: 1 }}>{fmtCur(ytdTotal) || "—"}</div>
         </div>
+        <div style={{ marginLeft: "auto", fontSize: 12, color: C.muted }}>{rows.length} transaction{rows.length !== 1 ? "s" : ""}</div>
+      </div>
 
-        <div style={{ marginTop: 12, fontSize: 12, color: C.muted, textAlign: "right" }}>
-          For advisor use only &nbsp;·&nbsp; Not for client distribution &nbsp;·&nbsp; Russell Financial Group
-        </div>
-      </main>
+      {/* Scrollable table */}
+      <div style={{ overflowX: "auto", padding: "16px 16px 32px" }}>
+        <style>{`
+          .blotter-input:focus { background: #eff6ff !important; }
+          .blotter-row:hover td { background: #f0f7ff !important; }
+        `}</style>
+        <table style={{ borderCollapse: "collapse", tableLayout: "fixed", minWidth: tableWidth, background: C.surface, boxShadow: "0 1px 8px rgba(0,0,0,0.07)", borderRadius: 10, overflow: "hidden" }}>
+          <colgroup>
+            {COLS.map(c => <col key={c.key} style={{ width: c.w }} />)}
+            <col style={{ width: 44 }} />
+          </colgroup>
 
-      {modal && <TradeModal trade={modal} onSave={save} onClose={() => setModal(null)} />}
+          <thead>
+            {/* Row 1: group banners */}
+            <tr>
+              {GROUP_SPANS.map((gs, i) => {
+                const m = GROUP_META[gs.group];
+                return (
+                  <th key={i} colSpan={gs.count} style={{
+                    ...TH, background: m.bg, color: m.color,
+                    fontSize: gs.group === "client" ? 12 : 11,
+                    fontWeight: 700, textAlign: gs.group === "client" ? "left" : "center",
+                    letterSpacing: "0.02em", height: 34,
+                  }}>
+                    {gs.group === "client" ? "Russell Financial Group — Transaction Blotter" : m.label}
+                  </th>
+                );
+              })}
+              <th style={{ ...TH, background: C.navyHdr, width: 44 }} />
+            </tr>
+
+            {/* Row 2: column labels */}
+            <tr>
+              {COLS.map(col => {
+                const m = GROUP_META[col.group];
+                return (
+                  <th key={col.key} style={{
+                    ...TH2, background: m.hdrBg, color: m.color,
+                  }}>
+                    {col.label}
+                  </th>
+                );
+              })}
+              <th style={{ ...TH2, background: "#f1f5f9" }} />
+            </tr>
+          </thead>
+
+          <tbody>
+            {rows.map((row, ri) => (
+              <tr key={row.id} className="blotter-row" style={{ background: ri % 2 === 0 ? C.surface : C.surfaceAlt }}>
+                {COLS.map(col => (
+                  <td key={col.key} style={TD}>
+                    {renderCell(row, col)}
+                  </td>
+                ))}
+                <td style={{ ...TD, textAlign: "center" }}>
+                  <button onClick={() => delRow(row.id)} title="Delete row"
+                    style={{ background: "none", border: "none", color: "#d1d5db", cursor: "pointer", fontSize: 16, lineHeight: 1, padding: "4px 8px", borderRadius: 4 }}>
+                    ×
+                  </button>
+                </td>
+              </tr>
+            ))}
+
+            {/* Add row */}
+            <tr>
+              <td colSpan={COLS.length + 1} onClick={addRow}
+                style={{ padding: "10px 16px", textAlign: "center", color: C.accent, fontSize: 13, cursor: "pointer", borderTop: `1px solid ${C.border}`, fontWeight: 500 }}>
+                + Add Transaction
+              </td>
+            </tr>
+          </tbody>
+
+          {/* Totals footer */}
+          <tfoot>
+            <tr style={{ background: "#f1f5f9", borderTop: `2px solid ${C.borderMid}` }}>
+              {COLS.map((col, i) => {
+                const isMonthly = col.key === "monthlyAmount";
+                const isOpening = col.key === "openingAmount";
+                return (
+                  <td key={col.key} style={{
+                    ...TD,
+                    padding: "8px",
+                    fontWeight: 700,
+                    fontSize: isMonthly || isOpening ? 13 : 11,
+                    color: isMonthly ? C.green : isOpening ? C.navy : C.muted,
+                    textTransform: i === 0 ? "uppercase" : undefined,
+                    letterSpacing: i === 0 ? "0.06em" : undefined,
+                  }}>
+                    {i === 0 ? "Totals" : isMonthly ? fmtCur(monthlyTotal) : isOpening ? fmtCur(ytdTotal) : ""}
+                  </td>
+                );
+              })}
+              <td style={TD} />
+            </tr>
+          </tfoot>
+        </table>
+      </div>
     </div>
   );
 }
