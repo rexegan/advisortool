@@ -2,24 +2,24 @@ import { useState } from "react";
 
 // ── Design tokens ─────────────────────────────────────────────────────────────
 const C = {
-  navy900: "#f1f4f9",
+  navy900: "#fbfcfe",
   navy800: "#ffffff",
-  navy700: "#f6f8fc",
-  navy600: "#e9eef6",
-  navy500: "#d3dbe8",
-  accent:  "#2563eb",
-  accentHover: "#1d4ed8",
-  gold:    "#a97e14",
-  green:   "#059669",
-  red:     "#dc2626",
-  orange:  "#ea580c",
-  purple:  "#7c3aed",
-  teal:    "#0d9488",
-  text:    "#111a2e",
-  muted:   "#55607a",
-  border:  "rgba(15,23,42,0.12)",
+  navy700: "#f7fafd",
+  navy600: "#eef3fa",
+  navy500: "#dde6f2",
+  accent:  "#2f74e0",
+  accentHover: "#215fc4",
+  gold:    "#b07d12",
+  green:   "#0ca678",
+  red:     "#e23b3b",
+  orange:  "#ef6c1a",
+  purple:  "#8257e0",
+  teal:    "#0fa3a3",
+  text:    "#1b2436",
+  muted:   "#68728a",
+  border:  "rgba(20,30,55,0.10)",
   card:    "#ffffff",
-  cardHov: "#f6f8fc",
+  cardHov: "#f7fafd",
 };
 
 const styles = `
@@ -30,7 +30,7 @@ const styles = `
   ::-webkit-scrollbar-track { background: ${C.navy800}; }
   ::-webkit-scrollbar-thumb { background: ${C.navy500}; border-radius: 3px; }
   input, textarea, select { font-family: 'Inter', sans-serif; }
-  .fade-in { animation: fadeIn 0.2s ease; }
+  .fade-in { animation: fadeIn 0.2s ease; box-shadow: 0 1px 3px rgba(20,30,55,0.06), 0 1px 2px rgba(20,30,55,0.04); }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 `;
 
