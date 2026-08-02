@@ -1,37 +1,45 @@
 import { useState } from "react";
 
 // ── Design tokens ─────────────────────────────────────────────────────────────
+// Palette sampled from the Client Intake "CatScan" workbook: steel-blue &
+// rust section banners, light-blue field labels, cream data rows, serif type.
 const C = {
-  navy900: "#fbfcfe",
-  navy800: "#ffffff",
-  navy700: "#f7fafd",
-  navy600: "#eef3fa",
-  navy500: "#dde6f2",
-  accent:  "#2f74e0",
-  accentHover: "#215fc4",
-  gold:    "#b07d12",
-  green:   "#0ca678",
-  red:     "#e23b3b",
-  orange:  "#ef6c1a",
-  purple:  "#8257e0",
-  teal:    "#0fa3a3",
-  text:    "#1b2436",
-  muted:   "#68728a",
-  border:  "rgba(20,30,55,0.10)",
+  navy900: "#ffffff",   // page background (white, like the spreadsheet)
+  navy800: "#ffffff",   // elevated surfaces / header
+  navy700: "#eef4fa",   // subtle panel background (very light blue)
+  navy600: "#d8e8f0",   // light-blue field-label fill
+  navy500: "#b9cbdd",   // scrollbar / dividers
+  accent:  "#407098",   // CatScan steel blue (primary)
+  accentHover: "#33597b",
+  gold:    "#b8860b",   // dark goldenrod
+  green:   "#2e7d32",
+  red:     "#b03328",   // CatScan-style red accent
+  orange:  "#ae5a24",   // CatScan rust
+  purple:  "#6b5b95",
+  teal:    "#2c7a7b",
+  text:    "#1a1a1a",   // near-black text
+  muted:   "#5a6472",
+  border:  "rgba(0,0,0,0.22)",   // grid-line style borders
   card:    "#ffffff",
-  cardHov: "#f7fafd",
+  cardHov: "#f8f0c8",   // cream (data-row highlight)
+  // CatScan-specific tokens
+  bannerBlue: "#407098",
+  bannerRust: "#ae5a24",
+  labelBlue:  "#d8e8f0",
+  cream:      "#f8f0c8",
 };
 
 const styles = `
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Inter', sans-serif; background: ${C.navy900}; color: ${C.text}; min-height: 100vh; }
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: ${C.navy800}; }
-  ::-webkit-scrollbar-thumb { background: ${C.navy500}; border-radius: 3px; }
-  input, textarea, select { font-family: 'Inter', sans-serif; }
-  .fade-in { animation: fadeIn 0.2s ease; box-shadow: 0 1px 3px rgba(20,30,55,0.06), 0 1px 2px rgba(20,30,55,0.04); }
+  body { font-family: Cambria, Georgia, 'Times New Roman', serif; background: ${C.navy900}; color: ${C.text}; min-height: 100vh; }
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: ${C.navy700}; }
+  ::-webkit-scrollbar-thumb { background: ${C.navy500}; border-radius: 2px; }
+  input, textarea, select { font-family: Cambria, Georgia, 'Times New Roman', serif; }
+  .fade-in { animation: fadeIn 0.2s ease; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  /* CatScan-style full-width section header banner */
+  .cat-banner { color: #ffffff; font-weight: 700; letter-spacing: 0.01em; }
 `;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -40,14 +48,14 @@ const today = () => new Date().toISOString().slice(0, 10);
 
 // ── Section config ────────────────────────────────────────────────────────────
 const SECTIONS = [
-  { id: "wholesalers", label: "Wholesalers & Vendors",      icon: "🤝", color: C.accent },
-  { id: "bd",          label: "Broker Dealer",              icon: "🏦", color: "#c026d3" },
-  { id: "fmo",         label: "My FMO",                        icon: "🌐", color: "#0284c7" },
+  { id: "wholesalers", label: "Wholesalers & Vendors",      icon: "🤝", color: C.bannerBlue },
+  { id: "bd",          label: "Broker Dealer",              icon: "🏦", color: C.bannerRust },
+  { id: "fmo",         label: "My FMO",                        icon: "🌐", color: C.bannerBlue },
   { id: "ce_licenses", label: "CE & Licensing",             icon: "🎓", color: C.gold },
   { id: "credentials", label: "Credentials & Designations", icon: "🏅", color: C.purple },
   { id: "contacts",    label: "Key Contacts",               icon: "📞", color: C.teal },
-  { id: "settings",    label: "Settings",                   icon: "⚙️", color: "#64748b" },
-  { id: "notes",       label: "Advisor Notes",              icon: "📝", color: C.orange },
+  { id: "settings",    label: "Settings",                   icon: "⚙️", color: "#5a6472" },
+  { id: "notes",       label: "Advisor Notes",              icon: "📝", color: C.bannerRust },
   { id: "stats",       label: "Practice Overview",          icon: "📊", color: "#64748b" },
 ];
 
@@ -1269,10 +1277,10 @@ export default function AdvisorToolbox() {
     <div style={{ minHeight: "100vh", background: C.navy900 }}>
       <style>{styles}</style>
 
-      <div style={{ background: C.navy800, borderBottom: `1px solid ${C.border}`, padding: "20px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div style={{ background: C.navy800, borderBottom: `3px solid ${C.accent}`, padding: "18px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: C.text, letterSpacing: "-0.01em", lineHeight: 1.1 }}>Russell Wealth Group</div>
-          <div style={{ fontSize: 13, color: C.accent, fontWeight: 600, marginTop: 4, letterSpacing: "0.04em" }}>ADVISOR TOOLBOX</div>
+          <div style={{ fontSize: 26, fontWeight: 700, color: C.accent, letterSpacing: "0", lineHeight: 1.1 }}>Russell Wealth Group</div>
+          <div style={{ fontSize: 13, color: C.text, fontWeight: 700, marginTop: 4, letterSpacing: "0.08em" }}>ADVISOR TOOLBOX</div>
         </div>
         <div style={{ textAlign: "right" }}>
           <div style={{ fontSize: 11, color: C.muted }}>Last updated</div>
@@ -1281,7 +1289,7 @@ export default function AdvisorToolbox() {
       </div>
 
       <div style={{ maxWidth: 1500, margin: "0 auto", padding: "28px 32px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6, marginBottom: 28, background: C.navy800, padding: 6, borderRadius: 12, border: `1px solid ${C.border}` }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 0, marginBottom: 26, background: C.navy800, border: `1px solid ${C.border}` }}>
           {SECTIONS.map(s => {
             const isActive = active === s.id;
             const shortLabels = {
@@ -1291,12 +1299,11 @@ export default function AdvisorToolbox() {
             };
             return (
               <button key={s.id} onClick={() => setActive(s.id)}
-                style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 5,
-                  padding: "14px 8px", borderRadius: 9, border: "none", cursor: "pointer", fontWeight: 600, fontSize: 13,
-                  background: isActive ? s.color + "22" : "transparent",
-                  color: isActive ? s.color : C.muted,
-                  outline: isActive ? `2px solid ${s.color}55` : "2px solid transparent",
-                  transition: "all 0.15s", lineHeight: 1.3, textAlign: "center" }}>
+                style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6,
+                  padding: "14px 8px", border: `1px solid ${C.border}`, cursor: "pointer", fontWeight: 700, fontSize: 13.5,
+                  background: isActive ? s.color : "#ffffff",
+                  color: isActive ? "#ffffff" : C.text,
+                  transition: "all 0.12s", lineHeight: 1.3, textAlign: "center" }}>
                 <span style={{ fontSize: 24 }}>{s.icon}</span>
                 <span>{shortLabels[s.id]}</span>
               </button>
@@ -1304,11 +1311,9 @@ export default function AdvisorToolbox() {
           })}
         </div>
 
-        <div style={{ marginBottom: 22 }}>
-          <div style={{ fontSize: 20, fontWeight: 800, display: "flex", alignItems: "center", gap: 10 }}>
-            <span>{activeSection.icon}</span>
-            <span style={{ color: activeSection.color }}>{activeSection.label}</span>
-          </div>
+        <div className="cat-banner" style={{ marginBottom: 20, background: activeSection.color, padding: "12px 20px", display: "flex", alignItems: "center", gap: 12, fontSize: 23, boxShadow: "0 1px 2px rgba(0,0,0,0.25)" }}>
+          <span>{activeSection.icon}</span>
+          <span>{activeSection.label}</span>
         </div>
 
         {active === "wholesalers"  && <WholesalersSection  data={db.wholesalers}  setData={setSection("wholesalers")} />}
