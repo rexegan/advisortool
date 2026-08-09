@@ -1111,9 +1111,9 @@ function SettingsSection({ db, setDb }) {
           const on = subTab === t.id;
           return (
             <button key={t.id} onClick={() => setSubTab(t.id)}
-              style={{ padding: "8px 18px", borderRadius: 8, border: `1px solid ${on ? SETTINGS_SLATE : C.border}`,
-                background: on ? SETTINGS_SLATE + "33" : "transparent", color: on ? "#e2e8f0" : C.muted,
-                fontWeight: 600, fontSize: 19, cursor: "pointer", transition: "all 0.15s" }}>
+              style={{ padding: "8px 18px", borderRadius: 8, border: `1px solid ${on ? C.bannerBlue : C.border}`,
+                background: on ? C.bannerBlue : "#ffffff", color: on ? "#ffffff" : C.text,
+                fontWeight: on ? 700 : 600, fontSize: 19, cursor: "pointer", transition: "all 0.15s" }}>
               {t.label}
             </button>
           );
