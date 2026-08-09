@@ -61,6 +61,15 @@ const fmtPhone = (raw) => {
   return raw;
 };
 
+// Progressive formatter for live typing in phone inputs: reformats digits as
+// (area) prefix-last4 while the user types (partial input allowed).
+const fmtPhoneInput = (raw) => {
+  const d = String(raw || "").replace(/\D/g, "").slice(0, 10);
+  if (d.length <= 3) return d;
+  if (d.length <= 6) return `(${d.slice(0, 3)}) ${d.slice(3)}`;
+  return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
+};
+
 // ── Section config ────────────────────────────────────────────────────────────
 const SECTIONS = [
   { id: "wholesalers", label: "Wholesalers & Vendors",      icon: "🤝", color: C.bannerBlue },
@@ -209,7 +218,7 @@ function PhoneEntry({ phone, onChange, onRemove, showRemove }) {
         style={{ ...base, width: 148, flexShrink: 0 }}>
         {PHONE_TYPES.map(t => <option key={t}>{t}</option>)}
       </select>
-      <input value={phone.number} onChange={e => onChange({ ...phone, number: e.target.value })}
+      <input value={phone.number} onChange={e => onChange({ ...phone, number: fmtPhoneInput(e.target.value) })}
         placeholder="Number / ext" style={{ ...base, flex: 1 }} />
       {showRemove && (
         <button onClick={onRemove} style={{ background: C.red + "22", border: `1px solid ${C.red}44`, color: C.red,
@@ -702,7 +711,7 @@ function ContactsSection({ data, setData }) {
             <Field label="Name" value={form.name} onChange={f("name")} placeholder="Full name or dept" />
             <Field label="Company / Org" value={form.company} onChange={f("company")} placeholder="Organization" />
             <Field label="Role" value={form.role} onChange={f("role")} options={CONT_ROLES} />
-            <Field label="Phone" value={form.phone} onChange={f("phone")} placeholder="Direct line" />
+            <Field label="Phone" value={form.phone} onChange={v => f("phone")(fmtPhoneInput(v))} placeholder="Direct line" />
             <Field label="Email" value={form.email} onChange={f("email")} placeholder="email@org.com" />
             <div style={{ gridColumn: "1/-1" }}>
               <Field label="Notes" value={form.notes} onChange={f("notes")} type="textarea" placeholder="What this contact is used for..." />
@@ -863,7 +872,7 @@ function BDSection({ data, setData }) {
             <Field label="Rep / Agent Code" value={form.repCode} onChange={f("repCode")} placeholder="Your rep code" />
             <Field label="Primary Contact" value={form.contactName} onChange={f("contactName")} placeholder="Home office contact" />
             <Field label="OSJ Location" value={form.osj} onChange={f("osj")} placeholder="City, ST" />
-            <Field label="Phone" value={form.phone} onChange={f("phone")} placeholder="800-000-0000" />
+            <Field label="Phone" value={form.phone} onChange={v => f("phone")(fmtPhoneInput(v))} placeholder="800-000-0000" />
             <Field label="Email" value={form.email} onChange={f("email")} placeholder="support@bd.com" />
             <div style={{ gridColumn: "1/-1" }}>
               <Field label="Website" value={form.website} onChange={f("website")} placeholder="https://..." />
@@ -954,7 +963,7 @@ function FMOSection({ data, setData }) {
             </div>
             <Field label="Type" value={form.type} onChange={f("type")} options={FMO_TYPES} />
             <Field label="Primary Contact" value={form.contactName} onChange={f("contactName")} placeholder="Rep or account manager" />
-            <Field label="Phone" value={form.phone} onChange={f("phone")} placeholder="800-000-0000" />
+            <Field label="Phone" value={form.phone} onChange={v => f("phone")(fmtPhoneInput(v))} placeholder="800-000-0000" />
             <Field label="Email" value={form.email} onChange={f("email")} placeholder="contact@fmo.com" />
             <Field label="Products / Lines" value={form.products} onChange={f("products")} placeholder="Life, Annuities, LTC..." />
             <Field label="Contract Level" value={form.contractLevel} onChange={f("contractLevel")} placeholder="Street, 105%, etc." />
@@ -1131,7 +1140,7 @@ function SettingsSection({ db, setDb }) {
           <SDivider label="Contact Info" />
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 18, marginTop: 14 }}>
             <SRow label="Email"><SInput value={profile.email} onChange={fp("email")} placeholder="you@firm.com" type="email" /></SRow>
-            <SRow label="Phone"><SInput value={profile.phone} onChange={fp("phone")} placeholder="Direct line" /></SRow>
+            <SRow label="Phone"><SInput value={profile.phone} onChange={v => fp("phone")(fmtPhoneInput(v))} placeholder="Direct line" /></SRow>
             <SRow label="Street Address"><SInput value={profile.address} onChange={fp("address")} placeholder="123 Main St" /></SRow>
             <SRow label="City"><SInput value={profile.city} onChange={fp("city")} placeholder="City" /></SRow>
             <SRow label="State"><SSelect value={profile.state} onChange={fp("state")} options={US_STATES} /></SRow>
