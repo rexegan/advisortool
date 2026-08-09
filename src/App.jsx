@@ -69,8 +69,8 @@ const SEED = {
   ],
   wholesalers: [
     { id: uid(), name: "American Funds", rep: "John Miller", wholesalerType: "External", phones: [{ id: uid(), type: "Direct", number: "800-421-4120" }], email: "jmiller@americanfunds.com", territory: "TX/OK", category: "Mutual Funds", notes: "Primary equity partner" },
-    { id: uid(), name: "Nationwide", rep: "Sarah Chen", wholesalerType: "External", phones: [{ id: uid(), type: "Direct", number: "877-245-0763" }, { id: uid(), type: "Cell", number: "214-555-0192" }], email: "schen@nationwide.com", territory: "South", category: "Annuities", notes: "Fixed & variable annuities" },
-    { id: uid(), name: "Allianz Life", rep: "Tom Reeves", wholesalerType: "External", phones: [{ id: uid(), type: "Office", number: "763-765-6500" }, { id: uid(), type: "Sales Desk", number: "800-950-5872" }], email: "treeves@allianzlife.com", territory: "TX", category: "Annuities / Life", notes: "Index annuities" },
+    { id: uid(), name: "Nationwide", rep: "Sarah Chen", wholesalerType: "External", phones: [{ id: uid(), type: "Direct", number: "877-245-0763" }, { id: uid(), type: "Cell", number: "214-555-0192" }], email: "schen@nationwide.com", territory: "South", category: "Variable Annuities", notes: "Fixed & variable annuities" },
+    { id: uid(), name: "Allianz Life", rep: "Tom Reeves", wholesalerType: "External", phones: [{ id: uid(), type: "Office", number: "763-765-6500" }, { id: uid(), type: "Sales Desk", number: "800-950-5872" }], email: "treeves@allianzlife.com", territory: "TX", category: "Fixed Indexed Annuities", notes: "Index annuities" },
   ],
   ce: [
     { id: uid(), title: "Ethics in Financial Planning", provider: "CFP Board", hours: 2, creditType: "Ethics", completedDate: "2024-03-15", expiresDate: "", certificate: "CFP-ETH-2024" },
@@ -172,7 +172,7 @@ function Empty({ label, sub }) {
 
 // ── WHOLESALERS ───────────────────────────────────────────────────────────────
 const PHONE_TYPES = ["Office", "Direct", "Cell", "Extension", "Fax", "Department", "Sales", "Marketing", "Sales Desk", "Marketing Desk", "Other"];
-const W_CATS = ["Mutual Funds", "Annuities", "Annuities / Life", "Life", "ETFs", "Alternative", "Banking", "Other"];
+const W_CATS = ["Mutual Funds", "Variable Annuities", "Fixed Indexed Annuities", "Fixed Annuities", "Alternative Investments", "Managed Money", "ETFs", "Life Insurance", "Long-Term Care", "Banking", "Other"];
 
 const W_BLANK = {
   name: "", rep: "", wholesalerType: "External", territory: "", category: "Mutual Funds",
@@ -205,7 +205,11 @@ function PhoneEntry({ phone, onChange, onRemove, showRemove }) {
 }
 
 function WholesalerCard({ item, onEdit, onDelete }) {
-  const cats = { "Mutual Funds": C.accent, "Annuities": C.gold, "Life": C.green, "Annuities / Life": C.purple, "ETFs": C.teal };
+  const cats = {
+    "Mutual Funds": C.accent, "Variable Annuities": C.gold, "Fixed Indexed Annuities": C.bannerRust,
+    "Fixed Annuities": C.orange, "Alternative Investments": C.purple, "Managed Money": C.teal,
+    "ETFs": C.accent, "Life Insurance": C.green, "Long-Term Care": C.bannerBlue, "Banking": C.muted,
+  };
   const isInternal = item.wholesalerType === "Internal";
   const phones = item.phones || (item.phone ? [{ id: "legacy", type: "Direct", number: item.phone }] : []);
   return (
@@ -243,6 +247,7 @@ function WholesalerCard({ item, onEdit, onDelete }) {
 function WholesalersSection({ data, setData }) {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(W_BLANK);
+  const [catFilter, setCatFilter] = useState("All");
   const f = (k) => (v) => setForm(p => ({ ...p, [k]: v }));
 
   const openNew = () => { setForm({ ...W_BLANK, phones: [{ id: uid(), type: "Direct", number: "" }] }); setEditing("new"); };
@@ -264,16 +269,29 @@ function WholesalersSection({ data, setData }) {
   const updatePhone = (idx, val) => setForm(p => { const phones = [...p.phones]; phones[idx] = val; return { ...p, phones }; });
   const removePhone = (idx) => setForm(p => ({ ...p, phones: p.phones.filter((_, i) => i !== idx) }));
 
-  const internal = data.filter(d => d.wholesalerType === "Internal");
-  const external = data.filter(d => d.wholesalerType !== "Internal");
+  const match = (d) => catFilter === "All" || d.category === catFilter;
+  const internal = data.filter(d => d.wholesalerType === "Internal" && match(d));
+  const external = data.filter(d => d.wholesalerType !== "Internal" && match(d));
+  const shown = internal.length + external.length;
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
-        <div style={{ color: C.muted, fontSize: 14 }}>
-          <span style={{ color: C.green, fontWeight: 600 }}>{internal.length} internal</span>
-          <span style={{ margin: "0 6px", color: C.border }}>·</span>
-          <span style={{ color: C.accent, fontWeight: 600 }}>{external.length} external</span>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18, gap: 12, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <label style={{ fontSize: 14, fontWeight: 700, color: C.text }}>Category:</label>
+            <select value={catFilter} onChange={(e) => setCatFilter(e.target.value)}
+              style={{ padding: "8px 14px", border: `1px solid ${C.border}`, borderRadius: 4, background: "#ffffff",
+                color: C.text, fontSize: 14, fontWeight: 600, cursor: "pointer", minWidth: 210 }}>
+              <option value="All">All Categories</option>
+              {W_CATS.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+          <div style={{ color: C.muted, fontSize: 14 }}>
+            <span style={{ color: C.green, fontWeight: 700 }}>{internal.length} internal</span>
+            <span style={{ margin: "0 6px" }}>·</span>
+            <span style={{ color: C.accent, fontWeight: 700 }}>{external.length} external</span>
+          </div>
         </div>
         <ActionBtn label="+ Add Wholesaler" onClick={openNew} />
       </div>
@@ -347,6 +365,7 @@ function WholesalersSection({ data, setData }) {
       )}
 
       {data.length === 0 && !editing && <Empty label="No wholesalers yet" sub="Add your wholesalers and vendors above" />}
+      {data.length > 0 && shown === 0 && !editing && <Empty label={`No wholesalers in “${catFilter}”`} sub="Try a different category or add one above" />}
     </div>
   );
 }
@@ -951,7 +970,7 @@ const US_STATES = ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","
 const MONTHS = ["01","02","03","04","05","06","07","08","09","10","11","12"];
 const MONTH_NAMES = { "01":"January","02":"February","03":"March","04":"April","05":"May","06":"June","07":"July","08":"August","09":"September","10":"October","11":"November","12":"December" };
 
-const W_CATS_DEFAULT = ["Mutual Funds", "Annuities", "Annuities / Life", "Life", "ETFs", "Alternative", "Banking", "Other"];
+const W_CATS_DEFAULT = ["Mutual Funds", "Variable Annuities", "Fixed Indexed Annuities", "Fixed Annuities", "Alternative Investments", "Managed Money", "ETFs", "Life Insurance", "Long-Term Care", "Banking", "Other"];
 const CE_TYPES_DEFAULT = ["CFP CE", "Ethics", "Insurance", "Securities", "State Reg", "Other"];
 const LIC_STATUSES_DEFAULT = ["Active", "Pending Renewal", "Expired", "Inactive"];
 const CONT_ROLES_DEFAULT = ["Compliance", "Operations", "Regulator", "Regulatory", "Custodian", "Attorney", "CPA", "Technology", "Vendor", "Other"];
