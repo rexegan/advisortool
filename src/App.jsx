@@ -40,6 +40,9 @@ const styles = `
   @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
   /* CatScan-style full-width section header banner */
   .cat-banner { color: #ffffff; font-weight: 700; letter-spacing: 0.01em; }
+  /* Clickable Practice Overview tiles */
+  .stat-tile { cursor: pointer; transition: box-shadow 0.12s, transform 0.12s; }
+  .stat-tile:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.14); transform: translateY(-2px); }
 `;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -1231,7 +1234,7 @@ function SettingsSection({ db, setDb }) {
 }
 
 // ── STATS / PRACTICE OVERVIEW ─────────────────────────────────────────────────
-function StatsSection({ db }) {
+function StatsSection({ db, onNavigate }) {
   const totalCE = db.ce.reduce((s, c) => s + parseFloat(c.hours || 0), 0);
   const expLic = db.licenses.filter(l => l.expires && l.expires !== "N/A" && new Date(l.expires) < new Date(Date.now() + 90 * 86400000));
   const expCred = db.credentials.filter(c => c.renewalDate && new Date(c.renewalDate) < new Date(Date.now() + 180 * 86400000));
@@ -1239,14 +1242,14 @@ function StatsSection({ db }) {
   const extW = db.wholesalers.filter(w => w.wholesalerType !== "Internal").length;
 
   const cards = [
-    { label: "Total Wholesalers & Vendors", value: db.wholesalers.length, sub: `${intW} internal · ${extW} external`, color: C.accent, icon: "🤝" },
-    { label: "Broker Dealers", value: db.bd.length, sub: "on file", color: "#e879f9", icon: "🏦" },
-    { label: "FMO / IMO Relationships", value: db.fmo.length, sub: "marketing orgs", color: "#38bdf8", icon: "🌐" },
-    { label: "CE Hours Logged", value: totalCE.toFixed(1), sub: `${db.ce.length} course${db.ce.length !== 1 ? "s" : ""}`, color: C.gold, icon: "🎓" },
-    { label: "Licenses & E&O", value: db.licenses.length, sub: db.licenses.filter(l => l.status === "Active").length + " active", color: C.green, icon: "📋" },
-    { label: "Designations", value: db.credentials.length, sub: "credentials on file", color: C.purple, icon: "🏅" },
-    { label: "Key Contacts", value: db.contacts.length, sub: "saved contacts", color: C.teal, icon: "📞" },
-    { label: "Advisor Notes", value: db.notes.length, sub: db.notes.filter(n => n.priority === "high").length + " high priority", color: C.orange, icon: "📝" },
+    { label: "Total Wholesalers & Vendors", to: "wholesalers", value: db.wholesalers.length, sub: `${intW} internal · ${extW} external`, color: C.bannerBlue, icon: "🤝" },
+    { label: "Broker Dealers", to: "bd", value: db.bd.length, sub: "on file", color: C.bannerRust, icon: "🏦" },
+    { label: "FMO / IMO Relationships", to: "fmo", value: db.fmo.length, sub: "marketing orgs", color: C.bannerBlue, icon: "🌐" },
+    { label: "CE Hours Logged", to: "ce_licenses", value: totalCE.toFixed(1), sub: `${db.ce.length} course${db.ce.length !== 1 ? "s" : ""}`, color: C.gold, icon: "🎓" },
+    { label: "Licenses & E&O", to: "ce_licenses", value: db.licenses.length, sub: db.licenses.filter(l => l.status === "Active").length + " active", color: C.green, icon: "📋" },
+    { label: "Designations", to: "credentials", value: db.credentials.length, sub: "credentials on file", color: C.purple, icon: "🏅" },
+    { label: "Key Contacts", to: "contacts", value: db.contacts.length, sub: "saved contacts", color: C.teal, icon: "📞" },
+    { label: "Advisor Notes", to: "notes", value: db.notes.length, sub: db.notes.filter(n => n.priority === "high").length + " high priority", color: C.bannerRust, icon: "📝" },
   ];
 
   const alerts = [
@@ -1272,11 +1275,16 @@ function StatsSection({ db }) {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 14 }}>
         {cards.map(s => (
-          <div key={s.label} style={{ background: C.card, border: `1px solid ${s.color}33`, borderRadius: 12, padding: "20px 18px" }}>
+          <div key={s.label} className="stat-tile" onClick={() => onNavigate && onNavigate(s.to)}
+            role="button" tabIndex={0}
+            onKeyDown={(e) => { if ((e.key === "Enter" || e.key === " ") && onNavigate) { e.preventDefault(); onNavigate(s.to); } }}
+            title={`Go to ${s.label}`}
+            style={{ background: C.card, border: `1px solid ${s.color}55`, borderTop: `3px solid ${s.color}`, borderRadius: 8, padding: "20px 18px" }}>
             <div style={{ fontSize: 26, marginBottom: 8 }}>{s.icon}</div>
             <div style={{ fontSize: 32, fontWeight: 800, color: s.color, lineHeight: 1 }}>{s.value}</div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginTop: 6 }}>{s.label}</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: C.text, marginTop: 6 }}>{s.label}</div>
             <div style={{ fontSize: 11, color: C.muted, marginTop: 3 }}>{s.sub}</div>
+            <div style={{ fontSize: 12, color: s.color, marginTop: 10, fontWeight: 700 }}>Open →</div>
           </div>
         ))}
       </div>
@@ -1343,7 +1351,7 @@ export default function AdvisorToolbox() {
         {active === "contacts"     && <ContactsSection     data={db.contacts}     setData={setSection("contacts")} />}
         {active === "settings"     && <SettingsSection     db={db}                setDb={setDb} />}
         {active === "notes"        && <NotesSection        data={db.notes}        setData={setSection("notes")} />}
-        {active === "stats"        && <StatsSection        db={db} />}
+        {active === "stats"        && <StatsSection        db={db} onNavigate={setActive} />}
       </div>
     </div>
   );
