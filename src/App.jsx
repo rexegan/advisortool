@@ -115,12 +115,12 @@ const SEED = {
 function Field({ label, value, onChange, type = "text", placeholder = "", options }) {
   const base = {
     width: "100%", background: C.navy700, border: `1px solid ${C.border}`,
-    borderRadius: 8, padding: "8px 12px", color: C.text, fontSize: 16,
+    borderRadius: 8, padding: "8px 12px", color: C.text, fontSize: 18,
     outline: "none", transition: "border 0.15s",
   };
   if (options) return (
     <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-      {label && <label style={{ fontSize: 13, color: C.muted, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</label>}
+      {label && <label style={{ fontSize: 15, color: C.muted, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</label>}
       <select value={value} onChange={e => onChange(e.target.value)} style={base}>
         {options.map(o => <option key={o} value={o}>{o}</option>)}
       </select>
@@ -128,14 +128,14 @@ function Field({ label, value, onChange, type = "text", placeholder = "", option
   );
   if (type === "textarea") return (
     <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-      {label && <label style={{ fontSize: 13, color: C.muted, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</label>}
+      {label && <label style={{ fontSize: 15, color: C.muted, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</label>}
       <textarea rows={3} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
         style={{ ...base, resize: "vertical", lineHeight: 1.6 }} />
     </div>
   );
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-      {label && <label style={{ fontSize: 13, color: C.muted, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</label>}
+      {label && <label style={{ fontSize: 15, color: C.muted, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</label>}
       <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} style={base} />
     </div>
   );
@@ -143,7 +143,7 @@ function Field({ label, value, onChange, type = "text", placeholder = "", option
 
 function Badge({ label, color }) {
   return (
-    <span style={{ fontSize: 13, fontWeight: 600, padding: "2px 8px", borderRadius: 20,
+    <span style={{ fontSize: 15, fontWeight: 600, padding: "2px 8px", borderRadius: 20,
       background: color + "22", color, border: `1px solid ${color}44`, whiteSpace: "nowrap" }}>
       {label}
     </span>
@@ -157,7 +157,7 @@ function ActionBtn({ label, color = C.accent, onClick, small }) {
       onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
       style={{ background: hov ? color : color + "22", color: hov ? "#fff" : color,
         border: `1px solid ${color}55`, borderRadius: 7, padding: small ? "4px 10px" : "7px 14px",
-        fontSize: small ? 14 : 15, fontWeight: 600, cursor: "pointer", transition: "all 0.15s" }}>
+        fontSize: small ? 16 : 17, fontWeight: 600, cursor: "pointer", transition: "all 0.15s" }}>
       {label}
     </button>
   );
@@ -166,9 +166,9 @@ function ActionBtn({ label, color = C.accent, onClick, small }) {
 function Empty({ label, sub }) {
   return (
     <div style={{ textAlign: "center", padding: "48px 24px", color: C.muted }}>
-      <div style={{ fontSize: 46, marginBottom: 12 }}>📂</div>
+      <div style={{ fontSize: 53, marginBottom: 12 }}>📂</div>
       <div style={{ fontWeight: 600, marginBottom: 6 }}>{label}</div>
-      <div style={{ fontSize: 15 }}>{sub}</div>
+      <div style={{ fontSize: 17 }}>{sub}</div>
     </div>
   );
 }
@@ -190,7 +190,7 @@ const phoneIcon = (type) => {
 };
 
 function PhoneEntry({ phone, onChange, onRemove, showRemove }) {
-  const base = { background: C.navy800, border: `1px solid ${C.border}`, borderRadius: 8, color: C.text, fontSize: 15, outline: "none", padding: "7px 10px" };
+  const base = { background: C.navy800, border: `1px solid ${C.border}`, borderRadius: 8, color: C.text, fontSize: 17, outline: "none", padding: "7px 10px" };
   return (
     <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
       <select value={phone.type} onChange={e => onChange({ ...phone, type: e.target.value })}
@@ -201,7 +201,7 @@ function PhoneEntry({ phone, onChange, onRemove, showRemove }) {
         placeholder="Number / ext" style={{ ...base, flex: 1 }} />
       {showRemove && (
         <button onClick={onRemove} style={{ background: C.red + "22", border: `1px solid ${C.red}44`, color: C.red,
-          borderRadius: 6, padding: "4px 9px", cursor: "pointer", fontSize: 15, fontWeight: 700, flexShrink: 0 }}>✕</button>
+          borderRadius: 6, padding: "4px 9px", cursor: "pointer", fontSize: 17, fontWeight: 700, flexShrink: 0 }}>✕</button>
       )}
     </div>
   );
@@ -219,8 +219,8 @@ function WholesalerCard({ item, onEdit, onDelete }) {
     <div className="fade-in" style={{ background: C.card, border: `1px solid ${isInternal ? C.green + "44" : C.border}`, borderRadius: 12, padding: 18 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8, marginBottom: 8 }}>
         <div>
-          <div style={{ fontWeight: 700, fontSize: 18 }}>{item.name}</div>
-          <div style={{ color: C.muted, fontSize: 15, marginTop: 2 }}>{item.rep}{item.territory ? ` · ${item.territory}` : ""}</div>
+          <div style={{ fontWeight: 700, fontSize: 21 }}>{item.name}</div>
+          <div style={{ color: C.muted, fontSize: 17, marginTop: 2 }}>{item.rep}{item.territory ? ` · ${item.territory}` : ""}</div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-end" }}>
           <Badge label={isInternal ? "Internal" : "External"} color={isInternal ? C.green : C.accent} />
@@ -230,15 +230,15 @@ function WholesalerCard({ item, onEdit, onDelete }) {
       {phones.length > 0 && (
         <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 8 }}>
           {phones.filter(p => p.number).map(p => (
-            <div key={p.id} style={{ fontSize: 15, display: "flex", alignItems: "center", gap: 6 }}>
-              <span style={{ color: C.muted, fontSize: 13, minWidth: 72 }}>{phoneIcon(p.type)} {p.type}</span>
+            <div key={p.id} style={{ fontSize: 17, display: "flex", alignItems: "center", gap: 6 }}>
+              <span style={{ color: C.muted, fontSize: 15, minWidth: 72 }}>{phoneIcon(p.type)} {p.type}</span>
               <a href={`tel:${p.number}`} style={{ color: C.teal, textDecoration: "none" }}>{p.number}</a>
             </div>
           ))}
         </div>
       )}
-      {item.email && <div style={{ fontSize: 15, marginBottom: 8 }}><a href={`mailto:${item.email}`} style={{ color: C.accent, textDecoration: "none" }}>✉ {item.email}</a></div>}
-      {item.notes && <div style={{ fontSize: 15, color: C.muted, marginBottom: 12 }}>{item.notes}</div>}
+      {item.email && <div style={{ fontSize: 17, marginBottom: 8 }}><a href={`mailto:${item.email}`} style={{ color: C.accent, textDecoration: "none" }}>✉ {item.email}</a></div>}
+      {item.notes && <div style={{ fontSize: 17, color: C.muted, marginBottom: 12 }}>{item.notes}</div>}
       <div style={{ display: "flex", gap: 8 }}>
         <ActionBtn small label="Edit" onClick={onEdit} />
         <ActionBtn small label="Delete" color={C.red} onClick={onDelete} />
@@ -282,15 +282,15 @@ function WholesalersSection({ data, setData }) {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18, gap: 12, flexWrap: "wrap" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <label style={{ fontSize: 16, fontWeight: 700, color: C.text }}>Category:</label>
+            <label style={{ fontSize: 18, fontWeight: 700, color: C.text }}>Category:</label>
             <select value={catFilter} onChange={(e) => setCatFilter(e.target.value)}
               style={{ padding: "8px 14px", border: `1px solid ${C.border}`, borderRadius: 4, background: "#ffffff",
-                color: C.text, fontSize: 16, fontWeight: 600, cursor: "pointer", minWidth: 210 }}>
+                color: C.text, fontSize: 18, fontWeight: 600, cursor: "pointer", minWidth: 210 }}>
               <option value="All">All Categories</option>
               {W_CATS.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
-          <div style={{ color: C.muted, fontSize: 16 }}>
+          <div style={{ color: C.muted, fontSize: 18 }}>
             <span style={{ color: C.green, fontWeight: 700 }}>{internal.length} internal</span>
             <span style={{ margin: "0 6px" }}>·</span>
             <span style={{ color: C.accent, fontWeight: 700 }}>{external.length} external</span>
@@ -309,7 +309,7 @@ function WholesalersSection({ data, setData }) {
               const col = t === "Internal" ? C.green : C.accent;
               return (
                 <button key={t} onClick={() => f("wholesalerType")(t)}
-                  style={{ padding: "7px 22px", borderRadius: 6, border: "none", cursor: "pointer", fontWeight: 700, fontSize: 15,
+                  style={{ padding: "7px 22px", borderRadius: 6, border: "none", cursor: "pointer", fontWeight: 700, fontSize: 17,
                     background: on ? col + "33" : "transparent", color: on ? col : C.muted, transition: "all 0.15s" }}>
                   {t}
                 </button>
@@ -325,7 +325,7 @@ function WholesalersSection({ data, setData }) {
           </div>
 
           <div style={{ marginBottom: 12 }}>
-            <div style={{ fontSize: 13, color: C.muted, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Phone Numbers</div>
+            <div style={{ fontSize: 15, color: C.muted, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Phone Numbers</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
               {form.phones.map((p, i) => (
                 <PhoneEntry key={p.id} phone={p} onChange={(v) => updatePhone(i, v)}
@@ -333,7 +333,7 @@ function WholesalersSection({ data, setData }) {
               ))}
             </div>
             <button onClick={addPhone} style={{ marginTop: 8, background: "transparent", border: `1px dashed ${C.border}`,
-              borderRadius: 7, padding: "5px 14px", color: C.muted, fontSize: 14, cursor: "pointer" }}>
+              borderRadius: 7, padding: "5px 14px", color: C.muted, fontSize: 16, cursor: "pointer" }}>
               + Add Phone
             </button>
           </div>
@@ -351,7 +351,7 @@ function WholesalersSection({ data, setData }) {
 
       {external.length > 0 && (
         <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: C.accent, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 12 }}>External Wholesalers</div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: C.accent, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 12 }}>External Wholesalers</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 14 }}>
             {external.map(item => <WholesalerCard key={item.id} item={item} onEdit={() => openEdit(item)} onDelete={() => del(item.id)} />)}
           </div>
@@ -360,7 +360,7 @@ function WholesalersSection({ data, setData }) {
 
       {internal.length > 0 && (
         <div>
-          <div style={{ fontSize: 13, fontWeight: 700, color: C.green, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 12 }}>Internal Wholesalers</div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: C.green, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 12 }}>Internal Wholesalers</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 14 }}>
             {internal.map(item => <WholesalerCard key={item.id} item={item} onEdit={() => openEdit(item)} onDelete={() => del(item.id)} />)}
           </div>
@@ -383,13 +383,13 @@ function CERow({ item, onEdit, onDelete }) {
   return (
     <div className="fade-in" style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, padding: 14, display: "flex", alignItems: "center", gap: 14 }}>
       <div style={{ minWidth: 48, textAlign: "center" }}>
-        <div style={{ fontSize: 25, fontWeight: 800, color: C.accent }}>{item.hours}</div>
-        <div style={{ fontSize: 12, color: C.muted, textTransform: "uppercase" }}>hrs</div>
+        <div style={{ fontSize: 29, fontWeight: 800, color: C.accent }}>{item.hours}</div>
+        <div style={{ fontSize: 14, color: C.muted, textTransform: "uppercase" }}>hrs</div>
       </div>
       <div style={{ flex: 1 }}>
-        <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 3 }}>{item.title}</div>
-        <div style={{ color: C.muted, fontSize: 14 }}>{item.provider} · Completed {item.completedDate}</div>
-        {item.certificate && <div style={{ color: C.muted, fontSize: 13, marginTop: 2 }}>Cert: {item.certificate}</div>}
+        <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 3 }}>{item.title}</div>
+        <div style={{ color: C.muted, fontSize: 16 }}>{item.provider} · Completed {item.completedDate}</div>
+        {item.certificate && <div style={{ color: C.muted, fontSize: 15, marginTop: 2 }}>Cert: {item.certificate}</div>}
       </div>
       <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
         <Badge label={item.creditType} color={typeColors[item.creditType] || C.accent} />
@@ -423,7 +423,7 @@ function CESection({ data, setData }) {
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
-        <div style={{ color: C.muted, fontSize: 16 }}>{data.length} courses · <span style={{ color: C.gold, fontWeight: 700 }}>{totalHrs.toFixed(1)} total hours</span></div>
+        <div style={{ color: C.muted, fontSize: 18 }}>{data.length} courses · <span style={{ color: C.gold, fontWeight: 700 }}>{totalHrs.toFixed(1)} total hours</span></div>
         <ActionBtn label="+ Add CE" onClick={openNew} color={C.gold} />
       </div>
       {editing && (
@@ -464,17 +464,17 @@ function LicCard({ item, onEdit, onDelete }) {
   return (
     <div className="fade-in" style={{ background: C.card, border: `1px solid ${expiring ? C.orange + "55" : C.border}`, borderRadius: 12, padding: 18 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-        <div style={{ fontWeight: 700, fontSize: 17 }}>{item.type}</div>
+        <div style={{ fontWeight: 700, fontSize: 20 }}>{item.type}</div>
         <Badge label={item.status} color={statusColor} />
       </div>
-      <div style={{ fontSize: 15, color: C.muted, marginBottom: 8 }}>
+      <div style={{ fontSize: 17, color: C.muted, marginBottom: 8 }}>
         <span style={{ color: C.text, fontWeight: 500 }}>#{item.number}</span> · {item.issuer}
       </div>
-      <div style={{ display: "flex", gap: 16, fontSize: 14, color: C.muted, marginBottom: 10 }}>
+      <div style={{ display: "flex", gap: 16, fontSize: 16, color: C.muted, marginBottom: 10 }}>
         <span>Issued {item.issued}</span>
         {item.expires && <span style={{ color: expiring ? C.orange : C.muted }}>Expires {item.expires}{expiring ? " ⚠️" : ""}</span>}
       </div>
-      {item.notes && <div style={{ fontSize: 15, color: C.muted, marginBottom: 12 }}>{item.notes}</div>}
+      {item.notes && <div style={{ fontSize: 17, color: C.muted, marginBottom: 12 }}>{item.notes}</div>}
       <div style={{ display: "flex", gap: 8 }}>
         <ActionBtn small label="Edit" color={C.green} onClick={onEdit} />
         <ActionBtn small label="Delete" color={C.red} onClick={onDelete} />
@@ -502,7 +502,7 @@ function LicensesSection({ data, setData }) {
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
-        <div style={{ color: C.muted, fontSize: 16 }}>{data.length} license{data.length !== 1 ? "s" : ""} & E&O records</div>
+        <div style={{ color: C.muted, fontSize: 18 }}>{data.length} license{data.length !== 1 ? "s" : ""} & E&O records</div>
         <ActionBtn label="+ Add License" color={C.green} onClick={openNew} />
       </div>
       {editing && (
@@ -544,7 +544,7 @@ function CombinedCELicSection({ ceData, setCeData, licData, setLicData }) {
             <button key={t.id} onClick={() => setSubTab(t.id)}
               style={{ padding: "8px 20px", borderRadius: 8, border: `1px solid ${on ? t.color : C.border}`,
                 background: on ? t.color + "22" : "transparent", color: on ? t.color : C.muted,
-                fontWeight: 600, fontSize: 15, cursor: "pointer", transition: "all 0.15s" }}>
+                fontWeight: 600, fontSize: 17, cursor: "pointer", transition: "all 0.15s" }}>
               {t.label}
             </button>
           );
@@ -564,17 +564,17 @@ function CredCard({ item, onEdit, onDelete }) {
   return (
     <div className="fade-in" style={{ background: C.card, border: `1px solid ${duesSoon ? C.purple + "55" : C.border}`, borderRadius: 12, padding: 18 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
-        <div style={{ fontSize: 30, fontWeight: 800, color: C.purple }}>{item.designation}</div>
+        <div style={{ fontSize: 34, fontWeight: 800, color: C.purple }}>{item.designation}</div>
         {item.ceRequired && <Badge label={`${item.ceRequired} CE req`} color={C.purple} />}
       </div>
-      <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 4 }}>{item.fullName}</div>
-      <div style={{ fontSize: 15, color: C.muted, marginBottom: 8 }}>
+      <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 4 }}>{item.fullName}</div>
+      <div style={{ fontSize: 17, color: C.muted, marginBottom: 8 }}>
         {item.issuingBody}{item.number ? ` · #${item.number}` : ""} · Earned {item.earned}
       </div>
-      {item.renewalDate && <div style={{ fontSize: 14, color: duesSoon ? C.orange : C.muted, marginBottom: 10 }}>
+      {item.renewalDate && <div style={{ fontSize: 16, color: duesSoon ? C.orange : C.muted, marginBottom: 10 }}>
         Renewal due {item.renewalDate}{duesSoon ? " ⚠️" : ""}
       </div>}
-      {item.notes && <div style={{ fontSize: 15, color: C.muted, marginBottom: 12 }}>{item.notes}</div>}
+      {item.notes && <div style={{ fontSize: 17, color: C.muted, marginBottom: 12 }}>{item.notes}</div>}
       <div style={{ display: "flex", gap: 8 }}>
         <ActionBtn small label="Edit" color={C.purple} onClick={onEdit} />
         <ActionBtn small label="Delete" color={C.red} onClick={onDelete} />
@@ -602,7 +602,7 @@ function CredentialsSection({ data, setData }) {
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
-        <div style={{ color: C.muted, fontSize: 16 }}>{data.length} designation{data.length !== 1 ? "s" : ""}</div>
+        <div style={{ color: C.muted, fontSize: 18 }}>{data.length} designation{data.length !== 1 ? "s" : ""}</div>
         <ActionBtn label="+ Add Credential" color={C.purple} onClick={openNew} />
       </div>
       {editing && (
@@ -643,16 +643,16 @@ function ContactCard({ item, onEdit, onDelete }) {
     <div className="fade-in" style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: 18 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
         <div>
-          <div style={{ fontWeight: 700, fontSize: 17 }}>{item.name}</div>
-          <div style={{ color: C.muted, fontSize: 15 }}>{item.company}</div>
+          <div style={{ fontWeight: 700, fontSize: 20 }}>{item.name}</div>
+          <div style={{ color: C.muted, fontSize: 17 }}>{item.company}</div>
         </div>
         <Badge label={item.role} color={C.teal} />
       </div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 10, fontSize: 15, marginBottom: 10 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 10, fontSize: 17, marginBottom: 10 }}>
         {item.phone && <a href={`tel:${item.phone}`} style={{ color: C.teal, textDecoration: "none" }}>📞 {item.phone}</a>}
         {item.email && <a href={`mailto:${item.email}`} style={{ color: C.accent, textDecoration: "none" }}>✉ {item.email}</a>}
       </div>
-      {item.notes && <div style={{ fontSize: 15, color: C.muted, marginBottom: 12 }}>{item.notes}</div>}
+      {item.notes && <div style={{ fontSize: 17, color: C.muted, marginBottom: 12 }}>{item.notes}</div>}
       <div style={{ display: "flex", gap: 8 }}>
         <ActionBtn small label="Edit" color={C.teal} onClick={onEdit} />
         <ActionBtn small label="Delete" color={C.red} onClick={onDelete} />
@@ -680,7 +680,7 @@ function ContactsSection({ data, setData }) {
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
-        <div style={{ color: C.muted, fontSize: 16 }}>{data.length} key contact{data.length !== 1 ? "s" : ""}</div>
+        <div style={{ color: C.muted, fontSize: 18 }}>{data.length} key contact{data.length !== 1 ? "s" : ""}</div>
         <ActionBtn label="+ Add Contact" color={C.teal} onClick={openNew} />
       </div>
       {editing && (
@@ -719,11 +719,11 @@ function NoteCard({ item, onEdit, onDelete }) {
   return (
     <div className="fade-in" style={{ background: C.card, border: `1px solid ${PRIO_COLOR[item.priority]}44`, borderRadius: 12, padding: 18 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-        <div style={{ fontWeight: 700, fontSize: 17, flex: 1 }}>{item.title}</div>
+        <div style={{ fontWeight: 700, fontSize: 20, flex: 1 }}>{item.title}</div>
         <Badge label={item.priority.toUpperCase()} color={PRIO_COLOR[item.priority]} />
       </div>
-      <div style={{ fontSize: 14, color: C.muted, marginBottom: 10 }}>{item.date}</div>
-      <div style={{ fontSize: 15, color: C.text, lineHeight: 1.6, marginBottom: 14, whiteSpace: "pre-wrap" }}>{item.body}</div>
+      <div style={{ fontSize: 16, color: C.muted, marginBottom: 10 }}>{item.date}</div>
+      <div style={{ fontSize: 17, color: C.text, lineHeight: 1.6, marginBottom: 14, whiteSpace: "pre-wrap" }}>{item.body}</div>
       <div style={{ display: "flex", gap: 8 }}>
         <ActionBtn small label="Edit" color={C.orange} onClick={onEdit} />
         <ActionBtn small label="Delete" color={C.red} onClick={onDelete} />
@@ -756,7 +756,7 @@ function NotesSection({ data, setData }) {
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
-        <div style={{ color: C.muted, fontSize: 16 }}>{data.length} note{data.length !== 1 ? "s" : ""}</div>
+        <div style={{ color: C.muted, fontSize: 18 }}>{data.length} note{data.length !== 1 ? "s" : ""}</div>
         <ActionBtn label="+ Add Note" color={C.orange} onClick={openNew} />
       </div>
       {editing && (
@@ -795,21 +795,21 @@ function BDCard({ item, onEdit, onDelete }) {
     <div className="fade-in" style={{ background: C.card, border: `1px solid ${BD_PINK}33`, borderRadius: 12, padding: 18 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
         <div>
-          <div style={{ fontWeight: 700, fontSize: 20 }}>{item.name}</div>
-          {item.crd && <div style={{ fontSize: 14, color: C.muted, marginTop: 2 }}>CRD# {item.crd}</div>}
+          <div style={{ fontWeight: 700, fontSize: 23 }}>{item.name}</div>
+          {item.crd && <div style={{ fontSize: 16, color: C.muted, marginTop: 2 }}>CRD# {item.crd}</div>}
         </div>
         {item.repCode && <Badge label={`Rep Code: ${item.repCode}`} color={BD_PINK} />}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, fontSize: 15, marginBottom: 10 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, fontSize: 17, marginBottom: 10 }}>
         {item.contactName && <div><span style={{ color: C.muted }}>Contact: </span>{item.contactName}</div>}
         {item.osj && <div><span style={{ color: C.muted }}>OSJ: </span>{item.osj}</div>}
       </div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 10, fontSize: 15, marginBottom: 10 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 10, fontSize: 17, marginBottom: 10 }}>
         {item.phone && <a href={`tel:${item.phone}`} style={{ color: C.teal, textDecoration: "none" }}>📞 {item.phone}</a>}
         {item.email && <a href={`mailto:${item.email}`} style={{ color: C.accent, textDecoration: "none" }}>✉ {item.email}</a>}
         {item.website && <a href={item.website} target="_blank" rel="noreferrer" style={{ color: BD_PINK, textDecoration: "none" }}>🔗 Website</a>}
       </div>
-      {item.notes && <div style={{ fontSize: 15, color: C.muted, marginBottom: 12 }}>{item.notes}</div>}
+      {item.notes && <div style={{ fontSize: 17, color: C.muted, marginBottom: 12 }}>{item.notes}</div>}
       <div style={{ display: "flex", gap: 8 }}>
         <ActionBtn small label="Edit" color={BD_PINK} onClick={onEdit} />
         <ActionBtn small label="Delete" color={C.red} onClick={onDelete} />
@@ -837,7 +837,7 @@ function BDSection({ data, setData }) {
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
-        <div style={{ color: C.muted, fontSize: 16 }}>{data.length} broker dealer{data.length !== 1 ? "s" : ""} on file</div>
+        <div style={{ color: C.muted, fontSize: 18 }}>{data.length} broker dealer{data.length !== 1 ? "s" : ""} on file</div>
         <ActionBtn label="+ Add Broker Dealer" color={BD_PINK} onClick={openNew} />
       </div>
       {editing && (
@@ -884,8 +884,8 @@ function FMOCard({ item, onEdit, onDelete }) {
     <div className="fade-in" style={{ background: C.card, border: `1px solid ${FMO_BLUE}33`, borderRadius: 12, padding: 18 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
         <div>
-          <div style={{ fontWeight: 700, fontSize: 20 }}>{item.name}</div>
-          {item.contactName && <div style={{ fontSize: 15, color: C.muted, marginTop: 2 }}>{item.contactName}</div>}
+          <div style={{ fontWeight: 700, fontSize: 23 }}>{item.name}</div>
+          {item.contactName && <div style={{ fontSize: 17, color: C.muted, marginTop: 2 }}>{item.contactName}</div>}
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-end" }}>
           <Badge label={item.type} color={FMO_BLUE} />
@@ -893,16 +893,16 @@ function FMOCard({ item, onEdit, onDelete }) {
         </div>
       </div>
       {item.products && (
-        <div style={{ fontSize: 15, marginBottom: 8 }}>
+        <div style={{ fontSize: 17, marginBottom: 8 }}>
           <span style={{ color: C.muted }}>Products: </span><span>{item.products}</span>
         </div>
       )}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 10, fontSize: 15, marginBottom: 10 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 10, fontSize: 17, marginBottom: 10 }}>
         {item.phone && <a href={`tel:${item.phone}`} style={{ color: C.teal, textDecoration: "none" }}>📞 {item.phone}</a>}
         {item.email && <a href={`mailto:${item.email}`} style={{ color: C.accent, textDecoration: "none" }}>✉ {item.email}</a>}
         {item.website && <a href={item.website} target="_blank" rel="noreferrer" style={{ color: FMO_BLUE, textDecoration: "none" }}>🔗 Website</a>}
       </div>
-      {item.notes && <div style={{ fontSize: 15, color: C.muted, marginBottom: 12 }}>{item.notes}</div>}
+      {item.notes && <div style={{ fontSize: 17, color: C.muted, marginBottom: 12 }}>{item.notes}</div>}
       <div style={{ display: "flex", gap: 8 }}>
         <ActionBtn small label="Edit" color={FMO_BLUE} onClick={onEdit} />
         <ActionBtn small label="Delete" color={C.red} onClick={onDelete} />
@@ -930,7 +930,7 @@ function FMOSection({ data, setData }) {
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
-        <div style={{ color: C.muted, fontSize: 16 }}>{data.length} FMO / IMO relationship{data.length !== 1 ? "s" : ""}</div>
+        <div style={{ color: C.muted, fontSize: 18 }}>{data.length} FMO / IMO relationship{data.length !== 1 ? "s" : ""}</div>
         <ActionBtn label="+ Add FMO / IMO" color={FMO_BLUE} onClick={openNew} />
       </div>
       {editing && (
@@ -990,13 +990,13 @@ function EditableList({ title, color, icon, items, setItems }) {
   const saveEdit = () => { if (editVal.trim()) { const next = [...items]; next[editIdx] = editVal.trim(); setItems(next); } setEditIdx(null); };
   const move = (i, dir) => { const next = [...items]; [next[i], next[i + dir]] = [next[i + dir], next[i]]; setItems(next); };
 
-  const inputS = { background: C.navy700, border: `1px solid ${C.border}`, borderRadius: 7, padding: "7px 11px", color: C.text, fontSize: 15, outline: "none" };
+  const inputS = { background: C.navy700, border: `1px solid ${C.border}`, borderRadius: 7, padding: "7px 11px", color: C.text, fontSize: 17, outline: "none" };
 
   return (
     <div style={{ background: C.card, border: `1px solid ${color}33`, borderRadius: 14, padding: 20 }}>
       <div style={{ fontWeight: 700, marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
         <span>{icon}</span><span style={{ color }}>{title}</span>
-        <span style={{ marginLeft: "auto", fontSize: 14, color: C.muted }}>{items.length} items</span>
+        <span style={{ marginLeft: "auto", fontSize: 16, color: C.muted }}>{items.length} items</span>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 14 }}>
         {items.map((item, i) => (
@@ -1010,9 +1010,9 @@ function EditableList({ title, color, icon, items, setItems }) {
               </>
             ) : (
               <>
-                <span style={{ flex: 1, fontSize: 15 }}>{item}</span>
-                <button onClick={() => move(i, -1)} disabled={i === 0} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 16, opacity: i === 0 ? 0.3 : 1 }}>↑</button>
-                <button onClick={() => move(i, 1)} disabled={i === items.length - 1} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 16, opacity: i === items.length - 1 ? 0.3 : 1 }}>↓</button>
+                <span style={{ flex: 1, fontSize: 17 }}>{item}</span>
+                <button onClick={() => move(i, -1)} disabled={i === 0} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 18, opacity: i === 0 ? 0.3 : 1 }}>↑</button>
+                <button onClick={() => move(i, 1)} disabled={i === items.length - 1} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 18, opacity: i === items.length - 1 ? 0.3 : 1 }}>↓</button>
                 <ActionBtn small label="Edit" color={color} onClick={() => startEdit(i)} />
                 <ActionBtn small label="✕" color={C.red} onClick={() => remove(i)} />
               </>
@@ -1042,8 +1042,8 @@ function SettingsSection({ db, setDb }) {
   const saveApp = () => { setDb(p => ({ ...p, appSettings: appCfg })); flash(); };
   const flash = () => { setSaved(true); setTimeout(() => setSaved(false), 2200); };
 
-  const inputBase = { width: "100%", background: C.navy700, border: `1px solid ${C.border}`, borderRadius: 8, padding: "9px 12px", color: C.text, fontSize: 16, outline: "none" };
-  const SLabel = ({ children }) => <div style={{ fontSize: 13, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 5 }}>{children}</div>;
+  const inputBase = { width: "100%", background: C.navy700, border: `1px solid ${C.border}`, borderRadius: 8, padding: "9px 12px", color: C.text, fontSize: 18, outline: "none" };
+  const SLabel = ({ children }) => <div style={{ fontSize: 15, color: C.muted, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 5 }}>{children}</div>;
   const SRow = ({ label, children }) => (
     <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
       <SLabel>{label}</SLabel>
@@ -1064,7 +1064,7 @@ function SettingsSection({ db, setDb }) {
   );
   const SDivider = ({ label }) => (
     <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "4px 0" }}>
-      <div style={{ fontSize: 13, color: SETTINGS_SLATE, textTransform: "uppercase", letterSpacing: "0.08em", whiteSpace: "nowrap" }}>{label}</div>
+      <div style={{ fontSize: 15, color: SETTINGS_SLATE, textTransform: "uppercase", letterSpacing: "0.08em", whiteSpace: "nowrap" }}>{label}</div>
       <div style={{ flex: 1, height: 1, background: C.border }} />
     </div>
   );
@@ -1080,7 +1080,7 @@ function SettingsSection({ db, setDb }) {
     <div className="fade-in">
       {saved && (
         <div style={{ position: "fixed", top: 24, right: 24, background: C.green, color: "#fff", fontWeight: 700,
-          padding: "10px 20px", borderRadius: 10, fontSize: 16, zIndex: 999, boxShadow: "0 4px 20px rgba(0,0,0,0.4)" }}>
+          padding: "10px 20px", borderRadius: 10, fontSize: 18, zIndex: 999, boxShadow: "0 4px 20px rgba(0,0,0,0.4)" }}>
           ✓ Saved
         </div>
       )}
@@ -1092,7 +1092,7 @@ function SettingsSection({ db, setDb }) {
             <button key={t.id} onClick={() => setSubTab(t.id)}
               style={{ padding: "8px 18px", borderRadius: 8, border: `1px solid ${on ? SETTINGS_SLATE : C.border}`,
                 background: on ? SETTINGS_SLATE + "33" : "transparent", color: on ? "#e2e8f0" : C.muted,
-                fontWeight: 600, fontSize: 15, cursor: "pointer", transition: "all 0.15s" }}>
+                fontWeight: 600, fontSize: 17, cursor: "pointer", transition: "all 0.15s" }}>
               {t.label}
             </button>
           );
@@ -1179,7 +1179,7 @@ function SettingsSection({ db, setDb }) {
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: 22 }}>
             <div style={{ fontWeight: 700, marginBottom: 6 }}>📤 Export Data</div>
-            <div style={{ fontSize: 15, color: C.muted, marginBottom: 14 }}>Download all your Advisor Toolbox data as a JSON file.</div>
+            <div style={{ fontSize: 17, color: C.muted, marginBottom: 14 }}>Download all your Advisor Toolbox data as a JSON file.</div>
             <ActionBtn label="Download JSON Backup" color={C.accent} onClick={() => {
               const blob = new Blob([JSON.stringify(db, null, 2)], { type: "application/json" });
               const url = URL.createObjectURL(blob);
@@ -1191,9 +1191,9 @@ function SettingsSection({ db, setDb }) {
 
           <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: 22 }}>
             <div style={{ fontWeight: 700, marginBottom: 6 }}>📥 Import Data</div>
-            <div style={{ fontSize: 15, color: C.muted, marginBottom: 14 }}>Restore from a previously exported JSON backup. <span style={{ color: C.red, fontWeight: 600 }}>This will overwrite all current data.</span></div>
+            <div style={{ fontSize: 17, color: C.muted, marginBottom: 14 }}>Restore from a previously exported JSON backup. <span style={{ color: C.red, fontWeight: 600 }}>This will overwrite all current data.</span></div>
             <label style={{ display: "inline-block", background: C.green + "22", border: `1px solid ${C.green}55`, color: C.green,
-              padding: "7px 16px", borderRadius: 8, fontSize: 15, fontWeight: 700, cursor: "pointer" }}>
+              padding: "7px 16px", borderRadius: 8, fontSize: 17, fontWeight: 700, cursor: "pointer" }}>
               Choose Backup File
               <input type="file" accept=".json" style={{ display: "none" }} onChange={e => {
                 const file = e.target.files?.[0]; if (!file) return;
@@ -1206,7 +1206,7 @@ function SettingsSection({ db, setDb }) {
 
           <div style={{ background: C.card, border: `1px solid ${C.red}33`, borderRadius: 14, padding: 22 }}>
             <div style={{ fontWeight: 700, marginBottom: 6, color: C.red }}>🗑️ Clear Section Data</div>
-            <div style={{ fontSize: 15, color: C.muted, marginBottom: 16 }}>Permanently delete all records from a specific section. Cannot be undone.</div>
+            <div style={{ fontSize: 17, color: C.muted, marginBottom: 16 }}>Permanently delete all records from a specific section. Cannot be undone.</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               {[
                 ["Wholesalers", "wholesalers", []],
@@ -1221,7 +1221,7 @@ function SettingsSection({ db, setDb }) {
                 <button key={key} onClick={() => {
                   if (window.confirm(`Clear ALL ${label}? This cannot be undone.`)) setDb(p => ({ ...p, [key]: empty }));
                 }} style={{ background: C.red + "15", border: `1px solid ${C.red}44`, color: C.red,
-                  padding: "6px 14px", borderRadius: 7, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+                  padding: "6px 14px", borderRadius: 7, fontSize: 16, fontWeight: 600, cursor: "pointer" }}>
                   Clear {label}
                 </button>
               ))}
@@ -1261,10 +1261,10 @@ function StatsSection({ db, onNavigate }) {
     <div className="fade-in">
       {alerts.length > 0 && (
         <div style={{ background: C.orange + "15", border: `1px solid ${C.orange}44`, borderRadius: 12, padding: 16, marginBottom: 24 }}>
-          <div style={{ fontWeight: 700, color: C.orange, marginBottom: 10, fontSize: 16 }}>⚠️ Attention Required</div>
+          <div style={{ fontWeight: 700, color: C.orange, marginBottom: 10, fontSize: 18 }}>⚠️ Attention Required</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             {alerts.map((a, i) => (
-              <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 15, color: C.text }}>
+              <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 17, color: C.text }}>
                 <span><Badge label={a.type} color={a.color} /> <span style={{ marginLeft: 8 }}>{a.name}</span></span>
                 <span style={{ color: a.color, fontWeight: 600 }}>Expires {a.date}</span>
               </div>
@@ -1280,11 +1280,11 @@ function StatsSection({ db, onNavigate }) {
             onKeyDown={(e) => { if ((e.key === "Enter" || e.key === " ") && onNavigate) { e.preventDefault(); onNavigate(s.to); } }}
             title={`Go to ${s.label}`}
             style={{ background: C.card, border: `1px solid ${s.color}55`, borderTop: `3px solid ${s.color}`, borderRadius: 8, padding: "20px 18px" }}>
-            <div style={{ fontSize: 30, marginBottom: 8 }}>{s.icon}</div>
-            <div style={{ fontSize: 37, fontWeight: 800, color: s.color, lineHeight: 1 }}>{s.value}</div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: C.text, marginTop: 6 }}>{s.label}</div>
-            <div style={{ fontSize: 13, color: C.muted, marginTop: 3 }}>{s.sub}</div>
-            <div style={{ fontSize: 14, color: s.color, marginTop: 10, fontWeight: 700 }}>Open →</div>
+            <div style={{ fontSize: 34, marginBottom: 8 }}>{s.icon}</div>
+            <div style={{ fontSize: 43, fontWeight: 800, color: s.color, lineHeight: 1 }}>{s.value}</div>
+            <div style={{ fontSize: 17, fontWeight: 700, color: C.text, marginTop: 6 }}>{s.label}</div>
+            <div style={{ fontSize: 15, color: C.muted, marginTop: 3 }}>{s.sub}</div>
+            <div style={{ fontSize: 16, color: s.color, marginTop: 10, fontWeight: 700 }}>Open →</div>
           </div>
         ))}
       </div>
@@ -1306,12 +1306,12 @@ export default function AdvisorToolbox() {
 
       <div style={{ background: C.navy800, borderBottom: `3px solid ${C.accent}`, padding: "18px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
-          <div style={{ fontSize: 30, fontWeight: 700, color: C.accent, letterSpacing: "0", lineHeight: 1.1 }}>Russell Wealth Group</div>
-          <div style={{ fontSize: 15, color: C.text, fontWeight: 700, marginTop: 4, letterSpacing: "0.08em" }}>ADVISOR TOOLBOX</div>
+          <div style={{ fontSize: 34, fontWeight: 700, color: C.accent, letterSpacing: "0", lineHeight: 1.1 }}>Russell Wealth Group</div>
+          <div style={{ fontSize: 17, color: C.text, fontWeight: 700, marginTop: 4, letterSpacing: "0.08em" }}>ADVISOR TOOLBOX</div>
         </div>
         <div style={{ textAlign: "right" }}>
-          <div style={{ fontSize: 13, color: C.muted }}>Last updated</div>
-          <div style={{ fontSize: 15, color: C.text, fontWeight: 500, marginTop: 2 }}>{new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</div>
+          <div style={{ fontSize: 15, color: C.muted }}>Last updated</div>
+          <div style={{ fontSize: 17, color: C.text, fontWeight: 500, marginTop: 2 }}>{new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</div>
         </div>
       </div>
 
@@ -1327,18 +1327,18 @@ export default function AdvisorToolbox() {
             return (
               <button key={s.id} onClick={() => setActive(s.id)}
                 style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6,
-                  padding: "14px 8px", border: `1px solid ${C.border}`, cursor: "pointer", fontWeight: 700, fontSize: 16,
+                  padding: "14px 8px", border: `1px solid ${C.border}`, cursor: "pointer", fontWeight: 700, fontSize: 18,
                   background: isActive ? s.color : "#ffffff",
                   color: isActive ? "#ffffff" : C.text,
                   transition: "all 0.12s", lineHeight: 1.3, textAlign: "center" }}>
-                <span style={{ fontSize: 28 }}>{s.icon}</span>
+                <span style={{ fontSize: 32 }}>{s.icon}</span>
                 <span>{shortLabels[s.id]}</span>
               </button>
             );
           })}
         </div>
 
-        <div className="cat-banner" style={{ marginBottom: 20, background: activeSection.color, padding: "12px 20px", display: "flex", alignItems: "center", gap: 12, fontSize: 26, boxShadow: "0 1px 2px rgba(0,0,0,0.25)" }}>
+        <div className="cat-banner" style={{ marginBottom: 20, background: activeSection.color, padding: "12px 20px", display: "flex", alignItems: "center", gap: 12, fontSize: 30, boxShadow: "0 1px 2px rgba(0,0,0,0.25)" }}>
           <span>{activeSection.icon}</span>
           <span>{activeSection.label}</span>
         </div>
