@@ -1,31 +1,40 @@
 import { useState } from "react";
 import type { CSSProperties } from "react";
 
-// ── Design tokens — matched to Client Intake (clientintake-eta.vercel.app) ──
-const PAGE_BG     = "#f4f6f9";
-const NAV         = "#ffffff";
-const SURFACE     = "#ffffff";
-const SURFACE_ALT = "#f9fafb";
-const INK         = "#151b28";
-const MUTED       = "#697180";
-const BORDER      = "#e1e4ea";
-const INPUT_BDR   = "#cfd5de";
-const ACCENT      = "#2f3a4a";
-const SUCCESS     = "#2fa76f";
-const BRAND_NAVY  = "#2e3d66";
-const SERIF       = "Georgia, 'Times New Roman', serif";
-const SANS        = "'DM Sans', 'Inter', system-ui, -apple-system, sans-serif";
+// ── Design tokens — exact match to Client Intake (clientintake-eta.vercel.app) ──
+const PAGE_BG    = "#f4f6f9";
+const NAV        = "#ffffff";
+const CARD       = "#ffffff";
+const INK        = "#151b28";
+const MUTED      = "#697180";
+const BORDER     = "#e1e4ea";
+const INPUT_BDR  = "#cfd5de";
+const ACCENT     = "#2f3a4a";
+const SUCCESS    = "#2fa76f";
+const DANGER     = "#d64545";
+const BRAND_NAVY = "#2e3d66";
+const SERIF      = "Georgia, 'Times New Roman', serif";
+const SANS       = "'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif";
 
-// Group colors — kept from original blotter, palette lightened to match CI energy
-const GRP = {
-  client:  { banner: BRAND_NAVY, bannerText: "#ffffff", colHdr: "#374b6d", colHdrText: "#e8ecf6" },
-  current: { banner: "#dbeafe",  bannerText: "#1e40af", colHdr: "#bfdbfe", colHdrText: "#1e3a8a" },
-  new:     { banner: "#ede9fe",  bannerText: "#5b21b6", colHdr: "#ddd6fe", colHdrText: "#4c1d95" },
-  post:    { banner: "#d1fae5",  bannerText: "#065f46", colHdr: "#a7f3d0", colHdrText: "#064e3b" },
+// Input style — exact match to Client Intake IS constant
+const IS: CSSProperties = {
+  background: CARD, border: `1px solid ${INPUT_BDR}`, borderRadius: 8,
+  padding: "5px 9px", color: INK, fontSize: 13, fontWeight: 500,
+  width: "100%", boxSizing: "border-box", fontFamily: SANS,
+  boxShadow: "0 1px 2px rgba(16,24,40,0.04)",
+  outline: "none",
+};
+
+// ── Column group color chips — mirror CI section-meta colors ─────────────────
+const GRP_META = {
+  client:  { color: BRAND_NAVY, bg: "#eef2ff", label: "Client Info",                icon: "👤" },
+  current: { color: "#1d4ed8",  bg: "#eff6ff", label: "Current Investment",         icon: "💼" },
+  new:     { color: "#7c3aed",  bg: "#f5f3ff", label: "New Investment",             icon: "📈" },
+  post:    { color: "#047857",  bg: "#f0fdf4", label: "Settlement & Tracking",      icon: "✅" },
 } as const;
 
-// ── Russell brand SVG ─────────────────────────────────────────────────────────
-function AcornMark({ size = 36 }: { size?: number }) {
+// ── Russell brand components (identical to Client Intake) ─────────────────────
+function AcornMark({ size = 42 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" fill="none" aria-hidden="true">
       <path d="M20.5 22.5C14 23.5 8.5 21 5.5 15.5C8.8 14.9 10.2 13.2 9.8 10.6C12.8 11.4 15 10.6 16.2 8.2C18.4 10 20.6 10.2 22.8 8.8C23.2 11.4 24.6 13 27 13.4C25.2 16.6 24.6 19.6 25.2 22.4Z" fill={BRAND_NAVY} opacity="0.92" />
@@ -39,17 +48,24 @@ function AcornMark({ size = 36 }: { size?: number }) {
 
 function BrandLockup() {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-      <AcornMark size={38} />
-      <div>
-        <div style={{ fontFamily: SERIF, fontSize: 17, letterSpacing: "0.2em", color: BRAND_NAVY, lineHeight: 1.1, fontWeight: 400 }}>RUSSELL</div>
-        <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 2 }}>
-          <span style={{ flex: "0 0 16px", height: 1, background: BRAND_NAVY, opacity: 0.45 }} />
-          <span style={{ fontFamily: SERIF, fontSize: 8, letterSpacing: "0.28em", color: BRAND_NAVY, whiteSpace: "nowrap", opacity: 0.8 }}>FINANCIAL GROUP</span>
-          <span style={{ flex: "0 0 16px", height: 1, background: BRAND_NAVY, opacity: 0.45 }} />
-        </div>
+    <div style={{ textAlign: "center" }}>
+      <AcornMark size={42} />
+      <div style={{ fontFamily: SERIF, fontSize: 18, letterSpacing: "0.2em", marginLeft: "0.2em", color: BRAND_NAVY, marginTop: 2, lineHeight: 1.1 }}>RUSSELL</div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, marginTop: 4 }}>
+        <span style={{ flex: "0 0 20px", height: 1, background: BRAND_NAVY, opacity: 0.5 }} />
+        <span style={{ fontFamily: SERIF, fontSize: 8.5, letterSpacing: "0.3em", marginLeft: "0.3em", color: BRAND_NAVY, whiteSpace: "nowrap" }}>FINANCIAL GROUP</span>
+        <span style={{ flex: "0 0 20px", height: 1, background: BRAND_NAVY, opacity: 0.5 }} />
       </div>
     </div>
+  );
+}
+
+function GroupChip({ group, size = 28 }: { group: keyof typeof GRP_META; size?: number }) {
+  const m = GRP_META[group];
+  return (
+    <span style={{ width: size, height: size, borderRadius: 7, background: m.bg, color: m.color, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: size * 0.45 }}>
+      {m.icon}
+    </span>
   );
 }
 
@@ -67,17 +83,14 @@ interface Col {
 }
 
 const COLS: Col[] = [
-  // Client identity
   { key: "entryDate",           label: "Date",                   group: "client",  type: "date",     w: 128 },
   { key: "lastName",            label: "Last Name",              group: "client",  type: "text",     w: 112 },
   { key: "mi",                  label: "MI",                     group: "client",  type: "text",     w: 40  },
   { key: "firstName",           label: "First Name",             group: "client",  type: "text",     w: 100 },
-  // Current Investment Information
   { key: "fundsFrom",           label: "Funds Coming From",      group: "current", type: "text",     w: 155 },
   { key: "curAcctType",         label: "Account Type",           group: "current", type: "text",     w: 118 },
   { key: "assetClass",          label: "Asset Class",            group: "current", type: "text",     w: 128 },
   { key: "curPolicyNum",        label: "Policy / Acct #",        group: "current", type: "text",     w: 138 },
-  // New Investment
   { key: "receivingFirm",       label: "Receiving Firm",         group: "new",     type: "text",     w: 145 },
   { key: "product",             label: "Product",                group: "new",     type: "text",     w: 145 },
   { key: "ticker",              label: "Ticker Symbol",          group: "new",     type: "text",     w: 90  },
@@ -89,7 +102,6 @@ const COLS: Col[] = [
   { key: "docsReceived",        label: "Docs Received",          group: "new",     type: "date",     w: 122 },
   { key: "overnightTracking",   label: "Overnight Tracking #",   group: "new",     type: "text",     w: 162 },
   { key: "followUp",            label: "Follow-Up",              group: "new",     type: "text",     w: 128 },
-  // Settlement & Tracking
   { key: "dateFunded",          label: "Date Funded",            group: "post",    type: "date",     w: 122 },
   { key: "newPolicyNum",        label: "New Policy / Acct #",    group: "post",    type: "text",     w: 152 },
   { key: "bankDraft",           label: "Bank Draft",             group: "post",    type: "select",   w: 90,  opts: ["", "Yes", "No"] },
@@ -101,10 +113,13 @@ const COLS: Col[] = [
   { key: "openingAmount",       label: "Opening $ Amount",       group: "post",    type: "currency", w: 136 },
 ];
 
-// ── Row helpers ───────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 type Row = { id: string } & Record<string, string>;
 
-const uid = () => Math.random().toString(36).slice(2, 9);
+const uid       = () => Math.random().toString(36).slice(2, 9);
+const parseCur  = (s: string) => parseFloat((s || "").replace(/[$,]/g, "")) || 0;
+const fmtCur    = (n: number) =>
+  n === 0 ? "—" : "$" + n.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
 const blankRow = (): Row => {
   const r: Row = { id: uid() };
@@ -112,10 +127,6 @@ const blankRow = (): Row => {
   r.entryDate = new Date().toISOString().slice(0, 10);
   return r;
 };
-
-const parseCur = (s: string) => parseFloat((s || "").replace(/[$,]/g, "")) || 0;
-const fmtCur   = (n: number) =>
-  n === 0 ? "—" : "$" + n.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
 // ── Seed data ─────────────────────────────────────────────────────────────────
 const SEED: Row[] = [
@@ -165,44 +176,24 @@ const SEED: Row[] = [
   },
 ];
 
-// ── Group span computation ────────────────────────────────────────────────────
+// ── Group spans ───────────────────────────────────────────────────────────────
 interface Span { group: Group; count: number }
 const GROUP_SPANS: Span[] = [];
-let cur: Span = { group: COLS[0].group, count: 1 };
-for (let i = 1; i < COLS.length; i++) {
-  if (COLS[i].group === cur.group) cur.count++;
-  else { GROUP_SPANS.push(cur); cur = { group: COLS[i].group, count: 1 }; }
+{
+  let cur: Span = { group: COLS[0].group, count: 1 };
+  for (let i = 1; i < COLS.length; i++) {
+    if (COLS[i].group === cur.group) cur.count++;
+    else { GROUP_SPANS.push(cur); cur = { group: COLS[i].group, count: 1 }; }
+  }
+  GROUP_SPANS.push(cur);
 }
-GROUP_SPANS.push(cur);
 
-// ── Table cell base styles ────────────────────────────────────────────────────
-const TH_BASE: CSSProperties = {
-  position: "sticky", top: 0, zIndex: 3,
-  padding: "8px 9px", textAlign: "left",
-  borderRight: `1px solid rgba(0,0,0,0.10)`,
-  borderBottom: `1px solid rgba(0,0,0,0.10)`,
-  whiteSpace: "nowrap", userSelect: "none",
-};
-const TH2_BASE: CSSProperties = {
-  ...TH_BASE, top: 36, zIndex: 2,
-  fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em",
-};
-const TD_BASE: CSSProperties = {
-  padding: 0,
-  borderRight: `1px solid ${BORDER}`,
-  borderBottom: `1px solid ${BORDER}`,
-  height: 34, verticalAlign: "middle",
-};
-const INPUT_BASE: CSSProperties = {
-  width: "100%", height: "100%", padding: "5px 9px",
-  border: "none", background: "transparent",
-  fontSize: 12.5, color: INK, fontFamily: SANS, outline: "none",
-  boxSizing: "border-box",
-};
+const tableWidth = COLS.reduce((s, c) => s + c.w, 0) + 44;
 
 // ── Main component ────────────────────────────────────────────────────────────
 export default function TradeBlotter() {
-  const [rows, setRows] = useState<Row[]>(SEED);
+  const [rows, setRows]   = useState<Row[]>(SEED);
+  const [open, setOpen]   = useState(true);
 
   const update = (id: string, key: string, val: string) =>
     setRows(rs => rs.map(r => r.id === id ? { ...r, [key]: val } : r));
@@ -213,17 +204,14 @@ export default function TradeBlotter() {
 
   const monthlyTotal = rows.reduce((s, r) => s + parseCur(r.monthlyAmount), 0);
   const ytdTotal     = rows.reduce((s, r) => s + parseCur(r.openingAmount), 0);
-  const tableWidth   = COLS.reduce((s, c) => s + c.w, 0) + 44;
+  const today        = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
 
   const renderCell = (row: Row, col: Col) => {
     const val = row[col.key] ?? "";
     if (col.type === "select") {
       return (
-        <select
-          value={val}
-          onChange={e => update(row.id, col.key, e.target.value)}
-          style={{ ...INPUT_BASE, cursor: "pointer" }}
-        >
+        <select value={val} onChange={e => update(row.id, col.key, e.target.value)}
+          style={{ ...IS, height: "100%", borderRadius: 0, border: "none", boxShadow: "none", background: "transparent", cursor: "pointer", padding: "5px 8px" }}>
           {(col.opts ?? []).map(o => <option key={o} value={o}>{o || "—"}</option>)}
         </select>
       );
@@ -233,171 +221,226 @@ export default function TradeBlotter() {
         type={col.type === "date" ? "date" : "text"}
         value={val}
         onChange={e => update(row.id, col.key, e.target.value)}
-        className="blotter-input"
-        style={INPUT_BASE}
+        className="b-input"
+        style={{ ...IS, height: "100%", borderRadius: 0, border: "none", boxShadow: "none", background: "transparent", padding: "5px 9px" }}
       />
     );
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: PAGE_BG, fontFamily: SANS, color: INK }}>
+    <div style={{ display: "flex", minHeight: "100vh", background: PAGE_BG, fontFamily: SANS, color: INK }}>
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
 
-        .blotter-input:focus { background: #eff6ff !important; outline: none !important; }
-        .blotter-row:hover td { background: #f1f5fb !important; }
+        .b-input:focus { background: #eff6ff !important; outline: none; }
+        .b-row:hover td { background: #f8fafc !important; }
 
-        .blotter-del-btn { color: #c4cad4; background: none; border: none; cursor: pointer; font-size: 17px; line-height: 1; padding: 4px 8px; border-radius: 4px; }
-        .blotter-del-btn:hover { color: #d64545; background: #fff1f1; }
+        .b-del { background: none; border: none; color: #c4cad4; cursor: pointer; font-size: 18px; line-height: 1; padding: 4px 8px; border-radius: 5px; }
+        .b-del:hover { color: ${DANGER}; background: #fff1f1; }
 
-        .blotter-add-row { color: ${ACCENT}; font-weight: 500; font-size: 13px; cursor: pointer; background: none; border: none; padding: 10px 16px; width: 100%; text-align: left; }
-        .blotter-add-row:hover { background: #f0f4f8; color: ${BRAND_NAVY}; }
+        .b-add { display: block; width: 100%; text-align: left; background: none; border: none; padding: 10px 18px; font-size: 13px; font-weight: 500; color: ${ACCENT}; cursor: pointer; font-family: ${SANS}; }
+        .b-add:hover { background: #f4f6f9; color: ${BRAND_NAVY}; }
 
-        .new-tx-btn { background: ${BRAND_NAVY}; color: #fff; border: none; border-radius: 8px; padding: 8px 20px; font-size: 13.5px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background 0.15s; }
-        .new-tx-btn:hover { background: #243660; }
+        .side-btn { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; background: transparent; border: none; color: #39414f; border-radius: 9px; padding: 6px 8px; margin-bottom: 2px; font-size: 12.5px; font-weight: 500; cursor: pointer; line-height: 1.3; font-family: ${SANS}; }
+        .side-btn:hover { background: rgba(47,58,74,0.08); color: ${INK}; }
+
+        .new-tx { background: ${BRAND_NAVY}; color: #fff; border: none; border-radius: 7px; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: ${SANS}; width: 100%; margin-top: 8px; }
+        .new-tx:hover { background: #243660; }
       `}</style>
 
-      {/* ── App header — white, like Client Intake nav ── */}
-      <header style={{
-        background: NAV, borderBottom: `1px solid ${BORDER}`,
-        padding: "14px 28px",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        boxShadow: "0 1px 4px rgba(21,27,40,0.06)",
-        position: "sticky", top: 0, zIndex: 10,
+      {/* ── SIDEBAR — identical structure to Client Intake ── */}
+      <aside style={{
+        width: 226, flexShrink: 0, background: NAV,
+        borderRight: `1px solid ${BORDER}`,
+        position: "sticky", top: 0, height: "100vh",
+        overflowY: "auto", boxSizing: "border-box",
+        padding: "18px 10px",
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+        {/* Brand lockup — centered, same as CI */}
+        <div style={{ padding: "8px 6px 14px" }}>
           <BrandLockup />
-          <div style={{ width: 1, height: 36, background: BORDER }} />
-          <div>
-            <div style={{ fontWeight: 700, fontSize: 15.5, color: INK, lineHeight: 1.1 }}>Transaction Blotter</div>
-            <div style={{ fontSize: 11, color: MUTED, marginTop: 2 }}>{rows.length} transaction{rows.length !== 1 ? "s" : ""}</div>
+          <div style={{ textAlign: "center", fontSize: 11, color: MUTED, marginTop: 7 }}>Transaction Blotter</div>
+        </div>
+
+        {/* Section label */}
+        <div style={{ padding: "0 6px", marginBottom: 6 }}>
+          <span style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", letterSpacing: "0.06em" }}>Column Groups</span>
+        </div>
+
+        {/* Group nav — mirror CI's sidebar buttons */}
+        {(Object.keys(GRP_META) as Group[]).map(g => {
+          const m = GRP_META[g];
+          return (
+            <button key={g} className="side-btn">
+              <GroupChip group={g} size={24} />
+              <span style={{ flex: 1 }}>{m.label}</span>
+            </button>
+          );
+        })}
+
+        {/* Divider */}
+        <div style={{ margin: "16px 6px", borderTop: `1px solid ${BORDER}` }} />
+
+        {/* Totals — displayed in sidebar like CI's stat cards */}
+        <div style={{ padding: "0 6px" }}>
+          <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Summary</div>
+
+          <div style={{ background: PAGE_BG, border: `1px solid ${BORDER}`, borderRadius: 10, padding: "10px 12px", marginBottom: 8 }}>
+            <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", letterSpacing: "0.05em" }}>Monthly Drafts</div>
+            <div style={{ fontSize: 19, fontWeight: 700, color: SUCCESS, marginTop: 3 }}>{fmtCur(monthlyTotal)}</div>
+          </div>
+
+          <div style={{ background: PAGE_BG, border: `1px solid ${BORDER}`, borderRadius: 10, padding: "10px 12px", marginBottom: 8 }}>
+            <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", letterSpacing: "0.05em" }}>YTD New Money</div>
+            <div style={{ fontSize: 19, fontWeight: 700, color: BRAND_NAVY, marginTop: 3 }}>{fmtCur(ytdTotal)}</div>
+          </div>
+
+          <div style={{ background: PAGE_BG, border: `1px solid ${BORDER}`, borderRadius: 10, padding: "10px 12px", marginBottom: 16 }}>
+            <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", letterSpacing: "0.05em" }}>Transactions</div>
+            <div style={{ fontSize: 19, fontWeight: 700, color: INK, marginTop: 3 }}>{rows.length}</div>
+          </div>
+
+          <button className="new-tx" onClick={addRow}>+ New Transaction</button>
+        </div>
+      </aside>
+
+      {/* ── MAIN CONTENT — same structure as CI's main-col ── */}
+      <div style={{ flex: 1, minWidth: 0, overflowX: "hidden" }}>
+        <div style={{ padding: "28px 28px 44px" }}>
+
+          {/* Page title area — mirrors CI's h1 + subtitle + date */}
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+              <h1 style={{ margin: 0, fontSize: 28, fontWeight: 700, letterSpacing: "-0.02em", color: INK }}>Transaction Blotter</h1>
+              <span style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.12em", color: BRAND_NAVY, border: `1px solid ${BRAND_NAVY}`, borderRadius: 5, padding: "2px 8px" }}>
+                Active
+              </span>
+            </div>
+            <div style={{ fontSize: 14, color: MUTED, marginTop: 6, lineHeight: 1.6 }}>
+              Russell Financial Group · Confidential
+              <br />
+              {today}
+            </div>
+          </div>
+
+          {/* Panel card — exact Panel component from Client Intake */}
+          <div style={{
+            background: CARD, border: `1px solid ${BORDER}`, borderRadius: 14,
+            marginBottom: 20, overflow: "hidden",
+            boxShadow: "0 1px 2px rgba(16,24,40,0.05)",
+          }}>
+            {/* Panel header */}
+            <div
+              onClick={() => setOpen(o => !o)}
+              style={{ display: "flex", alignItems: "center", gap: 11, padding: "15px 22px", cursor: "pointer", userSelect: "none", borderBottom: open ? `1px solid ${BORDER}` : "none" }}
+            >
+              <GroupChip group="client" size={28} />
+              <div style={{ fontSize: 15, fontWeight: 600, color: INK, flex: 1 }}>
+                All Transactions
+                <span style={{ marginLeft: 8, fontSize: 12, fontWeight: 500, color: MUTED }}>({rows.length} records)</span>
+              </div>
+              <span style={{ color: MUTED, fontSize: 12, lineHeight: 1 }}>{open ? "▲" : "▼"}</span>
+            </div>
+
+            {/* Scrollable table */}
+            {open && (
+              <div style={{ overflowX: "auto" }}>
+                <style>{`
+                  .b-th1 { position: sticky; top: 0; z-index: 3; padding: 8px 9px; text-align: left; border-right: 1px solid rgba(0,0,0,0.09); border-bottom: 1px solid rgba(0,0,0,0.09); white-space: nowrap; user-select: none; height: 36px; }
+                  .b-th2 { position: sticky; top: 36px; z-index: 2; padding: 7px 9px; text-align: left; border-right: 1px solid rgba(0,0,0,0.07); border-bottom: 1px solid ${BORDER}; white-space: nowrap; user-select: none; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+                  .b-td  { padding: 0; border-right: 1px solid ${BORDER}; border-bottom: 1px solid ${BORDER}; height: 34px; vertical-align: middle; }
+                `}</style>
+                <table style={{ borderCollapse: "collapse", tableLayout: "fixed", minWidth: tableWidth, background: CARD }}>
+                  <colgroup>
+                    {COLS.map(c => <col key={c.key} style={{ width: c.w }} />)}
+                    <col style={{ width: 44 }} />
+                  </colgroup>
+
+                  <thead>
+                    {/* Row 1 — group banner headers */}
+                    <tr>
+                      {GROUP_SPANS.map((gs, i) => {
+                        const m = GRP_META[gs.group];
+                        return (
+                          <th key={i} colSpan={gs.count} className="b-th1" style={{
+                            background: m.bg, color: m.color,
+                            fontSize: gs.group === "client" ? 12 : 11,
+                            fontWeight: 700,
+                            textAlign: gs.group === "client" ? "left" : "center",
+                            letterSpacing: "0.02em",
+                          }}>
+                            <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+                              <span style={{ fontSize: 12 }}>{m.icon}</span>
+                              {gs.group === "client" ? "Client Info" : m.label}
+                            </span>
+                          </th>
+                        );
+                      })}
+                      <th className="b-th1" style={{ background: GRP_META.client.bg, width: 44 }} />
+                    </tr>
+
+                    {/* Row 2 — column labels */}
+                    <tr>
+                      {COLS.map(col => {
+                        const m = GRP_META[col.group];
+                        return (
+                          <th key={col.key} className="b-th2" style={{
+                            background: "#f8fafc", color: MUTED,
+                            borderLeft: `3px solid ${m.color}`,
+                          }}>
+                            {col.label}
+                          </th>
+                        );
+                      })}
+                      <th className="b-th2" style={{ background: "#f8fafc" }} />
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {rows.map((row, ri) => (
+                      <tr key={row.id} className="b-row" style={{ background: ri % 2 === 0 ? CARD : "#fafbfc" }}>
+                        {COLS.map(col => (
+                          <td key={col.key} className="b-td">{renderCell(row, col)}</td>
+                        ))}
+                        <td className="b-td" style={{ textAlign: "center" }}>
+                          <button className="b-del" onClick={() => delRow(row.id)} title="Delete">×</button>
+                        </td>
+                      </tr>
+                    ))}
+
+                    <tr>
+                      <td colSpan={COLS.length + 1} style={{ borderTop: `1px solid ${BORDER}`, padding: 0 }}>
+                        <button className="b-add" onClick={addRow}>+ Add Transaction</button>
+                      </td>
+                    </tr>
+                  </tbody>
+
+                  <tfoot>
+                    <tr style={{ background: PAGE_BG, borderTop: `2px solid ${INPUT_BDR}` }}>
+                      {COLS.map((col, i) => {
+                        const isMo = col.key === "monthlyAmount";
+                        const isOp = col.key === "openingAmount";
+                        return (
+                          <td key={col.key} className="b-td" style={{
+                            padding: "8px 9px", fontWeight: 700, background: PAGE_BG,
+                            fontSize: isMo || isOp ? 13 : 11,
+                            color: isMo ? SUCCESS : isOp ? BRAND_NAVY : MUTED,
+                            textTransform: i === 0 ? "uppercase" : undefined,
+                            letterSpacing: i === 0 ? "0.07em" : undefined,
+                          }}>
+                            {i === 0 ? "Totals" : isMo ? fmtCur(monthlyTotal) : isOp ? fmtCur(ytdTotal) : ""}
+                          </td>
+                        );
+                      })}
+                      <td className="b-td" style={{ background: PAGE_BG }} />
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            )}
           </div>
         </div>
-        <button className="new-tx-btn" onClick={addRow}>+ New Transaction</button>
-      </header>
-
-      {/* ── Totals bar ── */}
-      <div style={{
-        background: SURFACE, borderBottom: `1px solid ${BORDER}`,
-        padding: "12px 28px",
-        display: "flex", gap: 40, alignItems: "center",
-      }}>
-        <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.07em" }}>Monthly Draft Total</div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: SUCCESS, marginTop: 2 }}>{fmtCur(monthlyTotal)}</div>
-        </div>
-        <div style={{ width: 1, height: 38, background: BORDER }} />
-        <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.07em" }}>YTD New Money</div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: BRAND_NAVY, marginTop: 2 }}>{fmtCur(ytdTotal)}</div>
-        </div>
-      </div>
-
-      {/* ── Scrollable blotter table ── */}
-      <div style={{ overflowX: "auto", padding: "20px 20px 40px" }}>
-        <table style={{
-          borderCollapse: "collapse",
-          tableLayout: "fixed",
-          minWidth: tableWidth,
-          background: SURFACE,
-          boxShadow: "0 1px 6px rgba(21,27,40,0.07), 0 0 0 1px rgba(21,27,40,0.05)",
-          borderRadius: 10,
-          overflow: "hidden",
-        }}>
-          <colgroup>
-            {COLS.map(c => <col key={c.key} style={{ width: c.w }} />)}
-            <col style={{ width: 44 }} />
-          </colgroup>
-
-          <thead>
-            {/* Row 1 — group banner */}
-            <tr>
-              {GROUP_SPANS.map((gs, i) => {
-                const g = GRP[gs.group];
-                return (
-                  <th key={i} colSpan={gs.count} style={{
-                    ...TH_BASE,
-                    background: g.banner, color: g.bannerText,
-                    fontSize: gs.group === "client" ? 12.5 : 11,
-                    fontWeight: 700,
-                    textAlign: gs.group === "client" ? "left" : "center",
-                    letterSpacing: "0.025em",
-                    height: 36,
-                  }}>
-                    {gs.group === "client"
-                      ? "Russell Financial Group — Transaction Blotter"
-                      : gs.group === "current" ? "Current Investment Information"
-                      : gs.group === "new"     ? "New Investment"
-                      : "Settlement & Tracking"}
-                  </th>
-                );
-              })}
-              <th style={{ ...TH_BASE, background: GRP.client.banner, width: 44 }} />
-            </tr>
-
-            {/* Row 2 — column labels */}
-            <tr>
-              {COLS.map(col => {
-                const g = GRP[col.group];
-                return (
-                  <th key={col.key} style={{
-                    ...TH2_BASE,
-                    background: g.colHdr,
-                    color: g.colHdrText,
-                  }}>
-                    {col.label}
-                  </th>
-                );
-              })}
-              <th style={{ ...TH2_BASE, background: "#f1f5f9", color: MUTED }} />
-            </tr>
-          </thead>
-
-          <tbody>
-            {rows.map((row, ri) => (
-              <tr key={row.id} className="blotter-row" style={{ background: ri % 2 === 0 ? SURFACE : SURFACE_ALT }}>
-                {COLS.map(col => (
-                  <td key={col.key} style={TD_BASE}>
-                    {renderCell(row, col)}
-                  </td>
-                ))}
-                <td style={{ ...TD_BASE, textAlign: "center", background: "inherit" }}>
-                  <button className="blotter-del-btn" onClick={() => delRow(row.id)} title="Delete transaction">×</button>
-                </td>
-              </tr>
-            ))}
-
-            <tr>
-              <td colSpan={COLS.length + 1} style={{ borderTop: `1px solid ${BORDER}`, padding: 0 }}>
-                <button className="blotter-add-row" onClick={addRow}>+ Add Transaction</button>
-              </td>
-            </tr>
-          </tbody>
-
-          <tfoot>
-            <tr style={{ background: "#f1f5f9", borderTop: `2px solid ${INPUT_BDR}` }}>
-              {COLS.map((col, i) => {
-                const isMonthly = col.key === "monthlyAmount";
-                const isOpening = col.key === "openingAmount";
-                return (
-                  <td key={col.key} style={{
-                    ...TD_BASE,
-                    padding: "8px 9px",
-                    fontWeight: 700,
-                    fontSize: isMonthly || isOpening ? 13 : 11,
-                    color: isMonthly ? SUCCESS : isOpening ? BRAND_NAVY : MUTED,
-                    textTransform: i === 0 ? "uppercase" : undefined,
-                    letterSpacing: i === 0 ? "0.07em" : undefined,
-                  }}>
-                    {i === 0 ? "Totals" : isMonthly ? fmtCur(monthlyTotal) : isOpening ? fmtCur(ytdTotal) : ""}
-                  </td>
-                );
-              })}
-              <td style={{ ...TD_BASE, background: "#f1f5f9" }} />
-            </tr>
-          </tfoot>
-        </table>
       </div>
     </div>
   );
