@@ -49,6 +49,18 @@ const styles = `
 const uid = () => Math.random().toString(36).slice(2, 9);
 const today = () => new Date().toISOString().slice(0, 10);
 
+// Format a phone number as (area) prefix-last4, e.g. (800) 421-4120.
+// Handles 10-digit, 11-digit (leading 1), and 7-digit numbers; leaves
+// anything unexpected (extensions, partial input) untouched.
+const fmtPhone = (raw) => {
+  if (!raw) return raw;
+  const d = String(raw).replace(/\D/g, "");
+  const ten = d.length === 11 && d[0] === "1" ? d.slice(1) : d;
+  if (ten.length === 10) return `(${ten.slice(0, 3)}) ${ten.slice(3, 6)}-${ten.slice(6)}`;
+  if (ten.length === 7) return `${ten.slice(0, 3)}-${ten.slice(3)}`;
+  return raw;
+};
+
 // ── Section config ────────────────────────────────────────────────────────────
 const SECTIONS = [
   { id: "wholesalers", label: "Wholesalers & Vendors",      icon: "🤝", color: C.bannerBlue },
@@ -232,7 +244,7 @@ function WholesalerCard({ item, onEdit, onDelete }) {
           {phones.filter(p => p.number).map(p => (
             <div key={p.id} style={{ fontSize: 19, display: "flex", alignItems: "center", gap: 6 }}>
               <span style={{ color: C.muted, fontSize: 17, minWidth: 72 }}>{phoneIcon(p.type)} {p.type}</span>
-              <a href={`tel:${p.number}`} style={{ color: C.teal, textDecoration: "none" }}>{p.number}</a>
+              <a href={`tel:${p.number}`} style={{ color: C.teal, textDecoration: "none" }}>{fmtPhone(p.number)}</a>
             </div>
           ))}
         </div>
@@ -649,7 +661,7 @@ function ContactCard({ item, onEdit, onDelete }) {
         <Badge label={item.role} color={C.teal} />
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10, fontSize: 19, marginBottom: 10 }}>
-        {item.phone && <a href={`tel:${item.phone}`} style={{ color: C.teal, textDecoration: "none" }}>📞 {item.phone}</a>}
+        {item.phone && <a href={`tel:${item.phone}`} style={{ color: C.teal, textDecoration: "none" }}>📞 {fmtPhone(item.phone)}</a>}
         {item.email && <a href={`mailto:${item.email}`} style={{ color: C.accent, textDecoration: "none" }}>✉ {item.email}</a>}
       </div>
       {item.notes && <div style={{ fontSize: 19, color: C.muted, marginBottom: 12 }}>{item.notes}</div>}
@@ -805,7 +817,7 @@ function BDCard({ item, onEdit, onDelete }) {
         {item.osj && <div><span style={{ color: C.muted }}>OSJ: </span>{item.osj}</div>}
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10, fontSize: 19, marginBottom: 10 }}>
-        {item.phone && <a href={`tel:${item.phone}`} style={{ color: C.teal, textDecoration: "none" }}>📞 {item.phone}</a>}
+        {item.phone && <a href={`tel:${item.phone}`} style={{ color: C.teal, textDecoration: "none" }}>📞 {fmtPhone(item.phone)}</a>}
         {item.email && <a href={`mailto:${item.email}`} style={{ color: C.accent, textDecoration: "none" }}>✉ {item.email}</a>}
         {item.website && <a href={item.website} target="_blank" rel="noreferrer" style={{ color: BD_PINK, textDecoration: "none" }}>🔗 Website</a>}
       </div>
@@ -898,7 +910,7 @@ function FMOCard({ item, onEdit, onDelete }) {
         </div>
       )}
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10, fontSize: 19, marginBottom: 10 }}>
-        {item.phone && <a href={`tel:${item.phone}`} style={{ color: C.teal, textDecoration: "none" }}>📞 {item.phone}</a>}
+        {item.phone && <a href={`tel:${item.phone}`} style={{ color: C.teal, textDecoration: "none" }}>📞 {fmtPhone(item.phone)}</a>}
         {item.email && <a href={`mailto:${item.email}`} style={{ color: C.accent, textDecoration: "none" }}>✉ {item.email}</a>}
         {item.website && <a href={item.website} target="_blank" rel="noreferrer" style={{ color: FMO_BLUE, textDecoration: "none" }}>🔗 Website</a>}
       </div>
