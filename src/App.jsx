@@ -73,14 +73,14 @@ const fmtPhoneInput = (raw) => {
 // ── Section config ────────────────────────────────────────────────────────────
 const SECTIONS = [
   { id: "wholesalers", label: "Wholesalers & Vendors",      icon: "🤝", color: C.bannerBlue },
-  { id: "bd",          label: "Broker Dealer",              icon: "🏦", color: C.bannerRust },
-  { id: "fmo",         label: "My FMO",                        icon: "🌐", color: C.bannerBlue },
-  { id: "ce_licenses", label: "CE & Licensing",             icon: "🎓", color: C.gold },
-  { id: "credentials", label: "Credentials & Designations", icon: "🏅", color: C.purple },
-  { id: "contacts",    label: "Key Contacts",               icon: "📞", color: C.teal },
-  { id: "settings",    label: "Settings",                   icon: "⚙️", color: "#5a6472" },
-  { id: "notes",       label: "Advisor Notes",              icon: "📝", color: C.bannerRust },
-  { id: "stats",       label: "Practice Overview",          icon: "📊", color: "#64748b" },
+  { id: "bd",          label: "Broker Dealer",              icon: "🏦", color: C.bannerBlue },
+  { id: "fmo",         label: "FMO / IMO",                  icon: "🌐", color: C.bannerBlue },
+  { id: "ce_licenses", label: "CE & Licensing",             icon: "🎓", color: C.bannerBlue },
+  { id: "credentials", label: "Credentials & Designations", icon: "🏅", color: C.bannerBlue },
+  { id: "contacts",    label: "Key Contacts",               icon: "📞", color: C.bannerBlue },
+  { id: "settings",    label: "Settings",                   icon: "⚙️", color: C.bannerBlue },
+  { id: "notes",       label: "Advisor Notes",              icon: "📝", color: C.bannerBlue },
+  { id: "stats",       label: "Practice Overview",          icon: "📊", color: C.bannerBlue },
 ];
 
 // ── Seed data ─────────────────────────────────────────────────────────────────
@@ -1264,13 +1264,13 @@ function StatsSection({ db, onNavigate }) {
 
   const cards = [
     { label: "Total Wholesalers & Vendors", to: "wholesalers", value: db.wholesalers.length, sub: `${intW} internal · ${extW} external`, color: C.bannerBlue, icon: "🤝" },
-    { label: "Broker Dealers", to: "bd", value: db.bd.length, sub: "on file", color: C.bannerRust, icon: "🏦" },
+    { label: "Broker Dealers", to: "bd", value: db.bd.length, sub: "on file", color: C.bannerBlue, icon: "🏦" },
     { label: "FMO / IMO Relationships", to: "fmo", value: db.fmo.length, sub: "marketing orgs", color: C.bannerBlue, icon: "🌐" },
-    { label: "CE Hours Logged", to: "ce_licenses", value: totalCE.toFixed(1), sub: `${db.ce.length} course${db.ce.length !== 1 ? "s" : ""}`, color: C.gold, icon: "🎓" },
-    { label: "Licenses & E&O", to: "ce_licenses", value: db.licenses.length, sub: db.licenses.filter(l => l.status === "Active").length + " active", color: C.green, icon: "📋" },
-    { label: "Designations", to: "credentials", value: db.credentials.length, sub: "credentials on file", color: C.purple, icon: "🏅" },
-    { label: "Key Contacts", to: "contacts", value: db.contacts.length, sub: "saved contacts", color: C.teal, icon: "📞" },
-    { label: "Advisor Notes", to: "notes", value: db.notes.length, sub: db.notes.filter(n => n.priority === "high").length + " high priority", color: C.bannerRust, icon: "📝" },
+    { label: "CE Hours Logged", to: "ce_licenses", value: totalCE.toFixed(1), sub: `${db.ce.length} course${db.ce.length !== 1 ? "s" : ""}`, color: C.bannerBlue, icon: "🎓" },
+    { label: "Licenses & E&O", to: "ce_licenses", value: db.licenses.length, sub: db.licenses.filter(l => l.status === "Active").length + " active", color: C.bannerBlue, icon: "📋" },
+    { label: "Designations", to: "credentials", value: db.credentials.length, sub: "credentials on file", color: C.bannerBlue, icon: "🏅" },
+    { label: "Key Contacts", to: "contacts", value: db.contacts.length, sub: "saved contacts", color: C.bannerBlue, icon: "📞" },
+    { label: "Advisor Notes", to: "notes", value: db.notes.length, sub: db.notes.filter(n => n.priority === "high").length + " high priority", color: C.bannerBlue, icon: "📝" },
   ];
 
   const alerts = [
@@ -1341,7 +1341,7 @@ export default function AdvisorToolbox() {
           {SECTIONS.map(s => {
             const isActive = active === s.id;
             const shortLabels = {
-              wholesalers: "Wholesalers & Vendors", bd: "Broker Dealer", fmo: "My FMO",
+              wholesalers: "Wholesalers & Vendors", bd: "Broker Dealer", fmo: "FMO / IMO",
               ce_licenses: "CE & Licensing", credentials: "Credentials",
               contacts: "Contacts", settings: "Settings", notes: "Notes", stats: "Overview"
             };
