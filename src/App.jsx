@@ -70,6 +70,12 @@ const fmtPhoneInput = (raw) => {
   return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
 };
 
+// Ensure a URL has a protocol so it opens as an external link, not a relative path.
+const normUrl = (u) => {
+  if (!u) return u;
+  return /^https?:\/\//i.test(u) ? u : "https://" + u.replace(/^\/+/, "");
+};
+
 // ── Section config ────────────────────────────────────────────────────────────
 const SECTIONS = [
   { id: "wholesalers", label: "Wholesalers & Vendors",      icon: "🤝", color: C.bannerBlue },
@@ -92,7 +98,7 @@ const SEED = {
     { id: uid(), name: "Life Insurance Company of the Southwest", type: "IMO", contactName: "Regional Director", phone: "800-000-0000", email: "advisor@example.com", website: "", products: "Life, Annuities", contractLevel: "Street", notes: "Primary FMO for life products" },
   ],
   wholesalers: [
-    { id: uid(), name: "American Funds", rep: "John Miller", wholesalerType: "External", phones: [{ id: uid(), type: "Direct", number: "800-421-4120" }], email: "jmiller@americanfunds.com", territory: "TX/OK", category: "Mutual Funds", notes: "Primary equity partner" },
+    { id: uid(), name: "American Funds", rep: "John Miller", wholesalerType: "External", phones: [{ id: uid(), type: "Direct", number: "800-421-4120" }], links: [{ id: uid(), title: "Submit Documents", url: "https://capitalgroup.com/advisor/esub/form?cid=svc0323v404153" }, { id: uid(), title: "Client Account Login", url: "https://capitalgroup.com/advisor/accounts/login.htm" }], email: "jmiller@americanfunds.com", territory: "TX/OK", category: "Mutual Funds", notes: "Primary equity partner" },
     { id: uid(), name: "Nationwide", rep: "Sarah Chen", wholesalerType: "External", phones: [{ id: uid(), type: "Direct", number: "877-245-0763" }, { id: uid(), type: "Cell", number: "214-555-0192" }], email: "schen@nationwide.com", territory: "South", category: "Variable Annuities", notes: "Fixed & variable annuities" },
     { id: uid(), name: "Allianz Life", rep: "Tom Reeves", wholesalerType: "External", phones: [{ id: uid(), type: "Office", number: "763-765-6500" }, { id: uid(), type: "Sales Desk", number: "800-950-5872" }], email: "treeves@allianzlife.com", territory: "TX", category: "Fixed Indexed Annuities", notes: "Index annuities" },
   ],
@@ -201,6 +207,7 @@ const W_CATS = ["Mutual Funds", "Variable Annuities", "Fixed Indexed Annuities",
 const W_BLANK = {
   name: "", rep: "", wholesalerType: "External", territory: "", category: "Mutual Funds",
   phones: [{ id: uid(), type: "Direct", number: "" }],
+  links: [],
   email: "", notes: ""
 };
 
@@ -224,6 +231,20 @@ function PhoneEntry({ phone, onChange, onRemove, showRemove }) {
         <button onClick={onRemove} style={{ background: C.red + "22", border: `1px solid ${C.red}44`, color: C.red,
           borderRadius: 6, padding: "4px 9px", cursor: "pointer", fontSize: 19, fontWeight: 700, flexShrink: 0 }}>✕</button>
       )}
+    </div>
+  );
+}
+
+function LinkEntry({ link, onChange, onRemove }) {
+  const base = { background: C.navy800, border: `1px solid ${C.border}`, borderRadius: 8, color: C.text, fontSize: 19, outline: "none", padding: "7px 10px" };
+  return (
+    <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+      <input value={link.title} onChange={e => onChange({ ...link, title: e.target.value })}
+        placeholder="Link title (e.g. Client Login)" style={{ ...base, width: 230, flexShrink: 0 }} />
+      <input value={link.url} onChange={e => onChange({ ...link, url: e.target.value })}
+        placeholder="capitalgroup.com/advisor/login" style={{ ...base, flex: 1 }} />
+      <button onClick={onRemove} style={{ background: C.red + "22", border: `1px solid ${C.red}44`, color: C.red,
+        borderRadius: 6, padding: "4px 9px", cursor: "pointer", fontSize: 19, fontWeight: 700, flexShrink: 0 }}>✕</button>
     </div>
   );
 }
@@ -259,6 +280,16 @@ function WholesalerCard({ item, onEdit, onDelete }) {
         </div>
       )}
       {item.email && <div style={{ fontSize: 19, marginBottom: 8 }}><a href={`mailto:${item.email}`} style={{ color: C.accent, textDecoration: "none" }}>✉ {item.email}</a></div>}
+      {(item.links || []).filter(l => l.url).length > 0 && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 10 }}>
+          {item.links.filter(l => l.url).map(l => (
+            <a key={l.id} href={normUrl(l.url)} target="_blank" rel="noreferrer"
+              style={{ fontSize: 19, color: C.accent, textDecoration: "none", fontWeight: 700 }}>
+              🔗 {l.title || l.url}
+            </a>
+          ))}
+        </div>
+      )}
       {item.notes && <div style={{ fontSize: 19, color: C.muted, marginBottom: 12 }}>{item.notes}</div>}
       <div style={{ display: "flex", gap: 8 }}>
         <ActionBtn small label="Edit" onClick={onEdit} />
@@ -274,10 +305,10 @@ function WholesalersSection({ data, setData }) {
   const [catFilter, setCatFilter] = useState("All");
   const f = (k) => (v) => setForm(p => ({ ...p, [k]: v }));
 
-  const openNew = () => { setForm({ ...W_BLANK, phones: [{ id: uid(), type: "Direct", number: "" }] }); setEditing("new"); };
+  const openNew = () => { setForm({ ...W_BLANK, phones: [{ id: uid(), type: "Direct", number: "" }], links: [] }); setEditing("new"); };
   const openEdit = (item) => {
     const phones = item.phones || (item.phone ? [{ id: uid(), type: "Direct", number: item.phone }] : [{ id: uid(), type: "Direct", number: "" }]);
-    setForm({ ...item, phones });
+    setForm({ ...item, phones, links: item.links || [] });
     setEditing(item.id);
   };
   const save = () => {
@@ -292,6 +323,10 @@ function WholesalersSection({ data, setData }) {
   const addPhone = () => setForm(p => ({ ...p, phones: [...p.phones, { id: uid(), type: "Office", number: "" }] }));
   const updatePhone = (idx, val) => setForm(p => { const phones = [...p.phones]; phones[idx] = val; return { ...p, phones }; });
   const removePhone = (idx) => setForm(p => ({ ...p, phones: p.phones.filter((_, i) => i !== idx) }));
+
+  const addLink = () => setForm(p => ({ ...p, links: [...(p.links || []), { id: uid(), title: "", url: "" }] }));
+  const updateLink = (idx, val) => setForm(p => { const links = [...(p.links || [])]; links[idx] = val; return { ...p, links }; });
+  const removeLink = (idx) => setForm(p => ({ ...p, links: (p.links || []).filter((_, i) => i !== idx) }));
 
   const match = (d) => catFilter === "All" || d.category === catFilter;
   const internal = data.filter(d => d.wholesalerType === "Internal" && match(d));
@@ -356,6 +391,19 @@ function WholesalersSection({ data, setData }) {
             <button onClick={addPhone} style={{ marginTop: 8, background: "transparent", border: `1px dashed ${C.border}`,
               borderRadius: 7, padding: "5px 14px", color: C.muted, fontSize: 18, cursor: "pointer" }}>
               + Add Phone
+            </button>
+          </div>
+
+          <div style={{ marginBottom: 12 }}>
+            <div style={{ fontSize: 17, color: C.muted, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Company URL Links</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+              {(form.links || []).map((lnk, i) => (
+                <LinkEntry key={lnk.id} link={lnk} onChange={(v) => updateLink(i, v)} onRemove={() => removeLink(i)} />
+              ))}
+            </div>
+            <button onClick={addLink} style={{ marginTop: 8, background: "transparent", border: `1px dashed ${C.border}`,
+              borderRadius: 7, padding: "5px 14px", color: C.muted, fontSize: 18, cursor: "pointer" }}>
+              + Add Company URL Link
             </button>
           </div>
 
