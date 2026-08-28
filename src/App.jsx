@@ -87,6 +87,7 @@ const SECTIONS = [
   { id: "settings",    label: "Settings",                   icon: "⚙️", color: "#5a6472" },
   { id: "notes",       label: "Advisor Notes",              icon: "📝", color: C.bannerRust },
   { id: "stats",       label: "Practice Overview",          icon: "📊", color: "#64748b" },
+  { id: "marketing",   label: "Marketing & Branding",       icon: "📣", color: C.green },
 ];
 
 // ── Seed data ─────────────────────────────────────────────────────────────────
@@ -123,6 +124,11 @@ const SEED = {
   notes: [
     { id: uid(), title: "Q2 2025 Review Checklist", date: "2025-06-01", priority: "high", body: "Complete annual client reviews, update risk tolerance forms, review beneficiary designations." },
     { id: uid(), title: "Compliance Reminder", date: "2025-05-15", priority: "medium", body: "Submit outside business activity disclosure by end of month." },
+  ],
+  marketing: [
+    { id: uid(), title: "Firm Overview Brochure", type: "Brochure", status: "BD Approved", approvedDate: "2026-05-12", link: "", notes: "Tri-fold client brochure, current version" },
+    { id: uid(), title: "RWG Letterhead", type: "Letterhead", status: "BD Approved", approvedDate: "2026-01-20", link: "", notes: "Word + PDF templates" },
+    { id: uid(), title: "Business Cards", type: "Business Cards", status: "Pending Approval", approvedDate: "", link: "", notes: "New design submitted to compliance" },
   ],
   advisorProfile: {
     name: "Rex Russell", title: "Financial Advisor, CFP®", firm: "Russell Wealth Group",
@@ -1286,6 +1292,7 @@ function SettingsSection({ db, setDb }) {
                 ["Credentials", "credentials", []],
                 ["Contacts", "contacts", []],
                 ["Notes", "notes", []],
+                ["Marketing", "marketing", []],
               ].map(([label, key, empty]) => (
                 <button key={key} onClick={() => {
                   if (window.confirm(`Clear ALL ${label}? This cannot be undone.`)) setDb(p => ({ ...p, [key]: empty }));
@@ -1298,6 +1305,115 @@ function SettingsSection({ db, setDb }) {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// ── MARKETING & BRANDING ──────────────────────────────────────────────────────
+const MKT_TYPES = ["Brochure", "Pamphlet", "Literature", "Compliance Approval", "Letterhead", "Business Cards", "Logo / Branding", "Social Media", "Website", "Advertisement", "Other"];
+const MKT_STATUS = ["BD Approved", "Pending Approval", "Draft", "Expired"];
+const MKT_BLANK = { title: "", type: "Brochure", status: "Draft", approvedDate: "", link: "", notes: "" };
+
+const mktStatusColor = (s) =>
+  s === "BD Approved" ? C.green : s === "Pending Approval" ? C.gold : s === "Expired" ? C.red : C.muted;
+
+function MarketingCard({ item, onEdit, onDelete }) {
+  return (
+    <div className="fade-in" style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: 18 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8, marginBottom: 8 }}>
+        <div style={{ fontWeight: 700, fontSize: 24 }}>{item.title}</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-end" }}>
+          <Badge label={item.type} color={C.green} />
+          <Badge label={item.status} color={mktStatusColor(item.status)} />
+        </div>
+      </div>
+      {item.status === "BD Approved" && item.approvedDate && (
+        <div style={{ fontSize: 19, color: C.green, fontWeight: 600, marginBottom: 8 }}>✓ BD approved {item.approvedDate}</div>
+      )}
+      {item.link && (
+        <div style={{ marginBottom: 8 }}>
+          <a href={normUrl(item.link)} target="_blank" rel="noreferrer" style={{ fontSize: 19, color: C.accent, textDecoration: "none", fontWeight: 700 }}>🔗 Open File / Link</a>
+        </div>
+      )}
+      {item.notes && <div style={{ fontSize: 19, color: C.muted, marginBottom: 12 }}>{item.notes}</div>}
+      <div style={{ display: "flex", gap: 8 }}>
+        <ActionBtn small label="Edit" color={C.green} onClick={onEdit} />
+        <ActionBtn small label="Delete" color={C.red} onClick={onDelete} />
+      </div>
+    </div>
+  );
+}
+
+function MarketingSection({ data, setData }) {
+  const [editing, setEditing] = useState(null);
+  const [form, setForm] = useState(MKT_BLANK);
+  const [typeFilter, setTypeFilter] = useState("All");
+  const f = (k) => (v) => setForm(p => ({ ...p, [k]: v }));
+
+  const openNew = () => { setForm(MKT_BLANK); setEditing("new"); };
+  const openEdit = (item) => { setForm({ ...item }); setEditing(item.id); };
+  const save = () => {
+    if (!form.title.trim()) return;
+    setData(editing === "new"
+      ? [...data, { ...form, id: uid() }]
+      : data.map(d => d.id === editing ? { ...form, id: editing } : d));
+    setEditing(null);
+  };
+  const del = (id) => setData(data.filter(d => d.id !== id));
+
+  const shownItems = data.filter(d => typeFilter === "All" || d.type === typeFilter);
+  const approved = data.filter(d => d.status === "BD Approved").length;
+  const pending = data.filter(d => d.status === "Pending Approval").length;
+
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18, gap: 12, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <label style={{ fontSize: 20, fontWeight: 700, color: C.text }}>Type:</label>
+            <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}
+              style={{ padding: "8px 14px", border: `1px solid ${C.border}`, borderRadius: 4, background: "#ffffff",
+                color: C.text, fontSize: 20, fontWeight: 600, cursor: "pointer", minWidth: 190 }}>
+              <option value="All">All Types</option>
+              {MKT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+          </div>
+          <div style={{ color: C.muted, fontSize: 20 }}>
+            <span style={{ color: C.green, fontWeight: 700 }}>{approved} approved</span>
+            <span style={{ margin: "0 6px" }}>·</span>
+            <span style={{ color: C.gold, fontWeight: 700 }}>{pending} pending</span>
+          </div>
+        </div>
+        <ActionBtn label="+ Add Marketing Item" color={C.green} onClick={openNew} />
+      </div>
+
+      {editing && (
+        <div className="fade-in" style={{ background: C.navy700, border: `1px solid ${C.green}44`, borderRadius: 12, padding: 20, marginBottom: 20 }}>
+          <div style={{ fontWeight: 700, marginBottom: 16, color: C.green }}>{editing === "new" ? "New Marketing Item" : "Edit Marketing Item"}</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <div style={{ gridColumn: "1/-1" }}>
+              <Field label="Title" value={form.title} onChange={f("title")} placeholder="Firm brochure, business cards, letterhead..." />
+            </div>
+            <Field label="Type" value={form.type} onChange={f("type")} options={MKT_TYPES} />
+            <Field label="Status" value={form.status} onChange={f("status")} options={MKT_STATUS} />
+            <Field label="BD Approval Date" value={form.approvedDate} onChange={f("approvedDate")} type="date" />
+            <Field label="File / Link URL" value={form.link} onChange={f("link")} placeholder="Dropbox, Drive, or website link" />
+            <div style={{ gridColumn: "1/-1" }}>
+              <Field label="Notes" value={form.notes} onChange={f("notes")} type="textarea" placeholder="Version, where it's used, compliance tracking number..." />
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
+            <ActionBtn label="Save" color={C.green} onClick={save} />
+            <ActionBtn label="Cancel" color={C.muted} onClick={() => setEditing(null)} />
+          </div>
+        </div>
+      )}
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 14 }}>
+        {shownItems.map(item => <MarketingCard key={item.id} item={item} onEdit={() => openEdit(item)} onDelete={() => del(item.id)} />)}
+      </div>
+      {data.length === 0 && !editing && <Empty label="No marketing materials yet" sub="Track brochures, letterhead, business cards, and BD approvals above" />}
+      {data.length > 0 && shownItems.length === 0 && !editing && <Empty label={`No items of type “${typeFilter}”`} sub="Try a different type or add one above" />}
     </div>
   );
 }
@@ -1319,6 +1435,7 @@ function StatsSection({ db, onNavigate }) {
     { label: "Designations", to: "credentials", value: db.credentials.length, sub: "credentials on file", color: C.purple, icon: "🏅" },
     { label: "Key Contacts", to: "contacts", value: db.contacts.length, sub: "saved contacts", color: C.teal, icon: "📞" },
     { label: "Advisor Notes", to: "notes", value: db.notes.length, sub: db.notes.filter(n => n.priority === "high").length + " high priority", color: C.bannerRust, icon: "📝" },
+    { label: "Marketing Materials", to: "marketing", value: (db.marketing || []).length, sub: (db.marketing || []).filter(m => m.status === "BD Approved").length + " BD approved", color: C.green, icon: "📣" },
   ];
 
   const alerts = [
@@ -1391,7 +1508,8 @@ export default function AdvisorToolbox() {
             const shortLabels = {
               wholesalers: "Wholesalers & Vendors", bd: "Broker Dealer", fmo: "FMO / IMO",
               ce_licenses: "CE & Licensing", credentials: "Credentials",
-              contacts: "Contacts", settings: "Settings", notes: "Notes", stats: "Overview"
+              contacts: "Contacts", settings: "Settings", notes: "Notes", stats: "Overview",
+              marketing: "Marketing"
             };
             return (
               <button key={s.id} onClick={() => setActive(s.id)}
@@ -1421,6 +1539,7 @@ export default function AdvisorToolbox() {
         {active === "settings"     && <SettingsSection     db={db}                setDb={setDb} />}
         {active === "notes"        && <NotesSection        data={db.notes}        setData={setSection("notes")} />}
         {active === "stats"        && <StatsSection        db={db} onNavigate={setActive} />}
+        {active === "marketing"    && <MarketingSection    data={db.marketing || []} setData={setSection("marketing")} />}
       </div>
     </div>
   );
