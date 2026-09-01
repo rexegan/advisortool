@@ -19,7 +19,7 @@ const C = {
   teal:    "#2c7a7b",
   text:    "#1a1a1a",   // near-black text
   muted:   "#5a6472",
-  border:  "rgba(0,0,0,0.22)",   // grid-line style borders
+  border:  "rgba(16,24,40,0.14)",   // soft neutral borders
   card:    "#ffffff",
   cardHov: "#f8f0c8",   // cream (data-row highlight)
   // CatScan-specific tokens
@@ -31,15 +31,15 @@ const C = {
 
 const styles = `
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Cambria, Georgia, 'Times New Roman', serif; background: ${C.navy900}; color: ${C.text}; min-height: 100vh; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; background: ${C.navy900}; color: ${C.text}; min-height: 100vh; }
   ::-webkit-scrollbar { width: 8px; }
   ::-webkit-scrollbar-track { background: ${C.navy700}; }
   ::-webkit-scrollbar-thumb { background: ${C.navy500}; border-radius: 2px; }
-  input, textarea, select { font-family: Cambria, Georgia, 'Times New Roman', serif; }
-  .fade-in { animation: fadeIn 0.2s ease; }
+  input, textarea, select, button { font-family: inherit; }
+  .fade-in { animation: fadeIn 0.2s ease; box-shadow: 0 1px 2px rgba(16,24,40,0.06); }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
   /* CatScan-style full-width section header banner */
-  .cat-banner { color: #ffffff; font-weight: 700; letter-spacing: 0.01em; }
+  .cat-banner { color: #ffffff; font-weight: 700; font-family: Cambria, Georgia, 'Times New Roman', serif; letter-spacing: 0.01em; }
   /* Clickable Practice Overview tiles */
   .stat-tile { cursor: pointer; transition: box-shadow 0.12s, transform 0.12s; }
   .stat-tile:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.14); transform: translateY(-2px); }
@@ -76,6 +76,8 @@ const normUrl = (u) => {
   return /^https?:\/\//i.test(u) ? u : "https://" + u.replace(/^\/+/, "");
 };
 
+
+const FONT_HEAD = "Cambria, Georgia, 'Times New Roman', serif";
 
 // ── Professional line icons (lucide-style, stroke-based) ─────────────────────
 const ICON_PATHS = {
@@ -218,7 +220,7 @@ function Field({ label, value, onChange, type = "text", placeholder = "", option
 function Badge({ label, color }) {
   return (
     <span style={{ fontSize: 17, fontWeight: 600, padding: "2px 8px", borderRadius: 20,
-      background: color + "22", color, border: `1px solid ${color}44`, whiteSpace: "nowrap" }}>
+      background: color + "22", color, border: `1px solid ${C.border}`, whiteSpace: "nowrap" }}>
       {label}
     </span>
   );
@@ -230,7 +232,7 @@ function ActionBtn({ label, color = C.accent, onClick, small }) {
     <button onClick={onClick}
       onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
       style={{ background: hov ? color : color + "22", color: hov ? "#fff" : color,
-        border: `1px solid ${color}55`, borderRadius: 7, padding: small ? "4px 10px" : "7px 14px",
+        border: `1px solid ${C.border}`, borderRadius: 7, padding: small ? "4px 10px" : "7px 14px",
         fontSize: small ? 18 : 19, fontWeight: 600, cursor: "pointer", transition: "all 0.15s" }}>
       {label}
     </button>
@@ -305,10 +307,10 @@ function WholesalerCard({ item, onEdit, onDelete }) {
   const isInternal = item.wholesalerType === "Internal";
   const phones = item.phones || (item.phone ? [{ id: "legacy", type: "Direct", number: item.phone }] : []);
   return (
-    <div className="fade-in" style={{ background: C.card, border: `1px solid ${isInternal ? C.green + "44" : C.border}`, borderRadius: 12, padding: 18 }}>
+    <div className="fade-in" style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: 18 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8, marginBottom: 8 }}>
         <div>
-          <div style={{ fontWeight: 700, fontSize: 24 }}>{item.name}</div>
+          <div style={{ fontWeight: 700, fontSize: 24, fontFamily: FONT_HEAD }}>{item.name}</div>
           <div style={{ color: C.muted, fontSize: 19, marginTop: 2 }}>{item.rep}{item.territory ? ` · ${item.territory}` : ""}</div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-end" }}>
@@ -403,7 +405,7 @@ function WholesalersSection({ data, setData }) {
       </div>
 
       {editing && (
-        <div className="fade-in" style={{ background: C.navy700, border: `1px solid ${C.accent}44`, borderRadius: 12, padding: 20, marginBottom: 20 }}>
+        <div className="fade-in" style={{ background: C.navy700, border: `1px solid ${C.border}`, borderRadius: 12, padding: 20, marginBottom: 20 }}>
           <div style={{ fontWeight: 700, marginBottom: 16, color: C.accent }}>{editing === "new" ? "New Wholesaler / Vendor" : "Edit Wholesaler / Vendor"}</div>
 
           <div style={{ display: "flex", gap: 0, marginBottom: 16, background: C.navy800, borderRadius: 8, padding: 4, width: "fit-content", border: `1px solid ${C.border}` }}>
@@ -499,7 +501,7 @@ function CERow({ item, onEdit, onDelete }) {
   return (
     <div className="fade-in" style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, padding: 14, display: "flex", alignItems: "center", gap: 14 }}>
       <div style={{ minWidth: 48, textAlign: "center" }}>
-        <div style={{ fontSize: 32, fontWeight: 800, color: C.accent }}>{item.hours}</div>
+        <div style={{ fontSize: 32, fontWeight: 800, color: C.accent, fontFamily: FONT_HEAD }}>{item.hours}</div>
         <div style={{ fontSize: 16, color: C.muted, textTransform: "uppercase" }}>hrs</div>
       </div>
       <div style={{ flex: 1 }}>
@@ -543,7 +545,7 @@ function CESection({ data, setData }) {
         <ActionBtn label="+ Add CE" onClick={openNew} color={C.gold} />
       </div>
       {editing && (
-        <div className="fade-in" style={{ background: C.navy700, border: `1px solid ${C.gold}44`, borderRadius: 12, padding: 20, marginBottom: 20 }}>
+        <div className="fade-in" style={{ background: C.navy700, border: `1px solid ${C.border}`, borderRadius: 12, padding: 20, marginBottom: 20 }}>
           <div style={{ fontWeight: 700, marginBottom: 16, color: C.gold }}>{editing === "new" ? "Log CE Credit" : "Edit CE Entry"}</div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             <div style={{ gridColumn: "1/-1" }}>
@@ -622,7 +624,7 @@ function LicensesSection({ data, setData }) {
         <ActionBtn label="+ Add License" color={C.green} onClick={openNew} />
       </div>
       {editing && (
-        <div className="fade-in" style={{ background: C.navy700, border: `1px solid ${C.green}44`, borderRadius: 12, padding: 20, marginBottom: 20 }}>
+        <div className="fade-in" style={{ background: C.navy700, border: `1px solid ${C.border}`, borderRadius: 12, padding: 20, marginBottom: 20 }}>
           <div style={{ fontWeight: 700, marginBottom: 16, color: C.green }}>{editing === "new" ? "New License / E&O" : "Edit License"}</div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             <Field label="License Type" value={form.type} onChange={f("type")} placeholder="e.g. Series 65, Life & Health" />
@@ -680,7 +682,7 @@ function CredCard({ item, onEdit, onDelete }) {
   return (
     <div className="fade-in" style={{ background: C.card, border: `1px solid ${duesSoon ? C.purple + "55" : C.border}`, borderRadius: 12, padding: 18 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
-        <div style={{ fontSize: 38, fontWeight: 800, color: C.purple }}>{item.designation}</div>
+        <div style={{ fontSize: 38, fontWeight: 800, color: C.purple, fontFamily: FONT_HEAD }}>{item.designation}</div>
         {item.ceRequired && <Badge label={`${item.ceRequired} CE req`} color={C.purple} />}
       </div>
       <div style={{ fontWeight: 600, fontSize: 20, marginBottom: 4 }}>{item.fullName}</div>
@@ -722,7 +724,7 @@ function CredentialsSection({ data, setData }) {
         <ActionBtn label="+ Add Credential" color={C.purple} onClick={openNew} />
       </div>
       {editing && (
-        <div className="fade-in" style={{ background: C.navy700, border: `1px solid ${C.purple}44`, borderRadius: 12, padding: 20, marginBottom: 20 }}>
+        <div className="fade-in" style={{ background: C.navy700, border: `1px solid ${C.border}`, borderRadius: 12, padding: 20, marginBottom: 20 }}>
           <div style={{ fontWeight: 700, marginBottom: 16, color: C.purple }}>{editing === "new" ? "New Credential" : "Edit Credential"}</div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             <Field label="Designation (e.g. CFP®)" value={form.designation} onChange={f("designation")} placeholder="CFP®, ChFC, CLU..." />
@@ -800,7 +802,7 @@ function ContactsSection({ data, setData }) {
         <ActionBtn label="+ Add Contact" color={C.teal} onClick={openNew} />
       </div>
       {editing && (
-        <div className="fade-in" style={{ background: C.navy700, border: `1px solid ${C.teal}44`, borderRadius: 12, padding: 20, marginBottom: 20 }}>
+        <div className="fade-in" style={{ background: C.navy700, border: `1px solid ${C.border}`, borderRadius: 12, padding: 20, marginBottom: 20 }}>
           <div style={{ fontWeight: 700, marginBottom: 16, color: C.teal }}>{editing === "new" ? "New Contact" : "Edit Contact"}</div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             <Field label="Name" value={form.name} onChange={f("name")} placeholder="Full name or dept" />
@@ -876,7 +878,7 @@ function NotesSection({ data, setData }) {
         <ActionBtn label="+ Add Note" color={C.orange} onClick={openNew} />
       </div>
       {editing && (
-        <div className="fade-in" style={{ background: C.navy700, border: `1px solid ${C.orange}44`, borderRadius: 12, padding: 20, marginBottom: 20 }}>
+        <div className="fade-in" style={{ background: C.navy700, border: `1px solid ${C.border}`, borderRadius: 12, padding: 20, marginBottom: 20 }}>
           <div style={{ fontWeight: 700, marginBottom: 16, color: C.orange }}>{editing === "new" ? "New Note" : "Edit Note"}</div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             <div style={{ gridColumn: "1/-1" }}>
@@ -908,7 +910,7 @@ const BD_BLANK = { name: "", crd: "", repCode: "", contactName: "", phone: "", e
 
 function BDCard({ item, onEdit, onDelete }) {
   return (
-    <div className="fade-in" style={{ background: C.card, border: `1px solid ${BD_PINK}33`, borderRadius: 12, padding: 18 }}>
+    <div className="fade-in" style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: 18 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
         <div>
           <div style={{ fontWeight: 700, fontSize: 26 }}>{item.name}</div>
@@ -957,7 +959,7 @@ function BDSection({ data, setData }) {
         <ActionBtn label="+ Add Broker Dealer" color={BD_PINK} onClick={openNew} />
       </div>
       {editing && (
-        <div className="fade-in" style={{ background: C.navy700, border: `1px solid ${BD_PINK}44`, borderRadius: 12, padding: 20, marginBottom: 20 }}>
+        <div className="fade-in" style={{ background: C.navy700, border: `1px solid ${C.border}`, borderRadius: 12, padding: 20, marginBottom: 20 }}>
           <div style={{ fontWeight: 700, marginBottom: 16, color: BD_PINK }}>{editing === "new" ? "New Broker Dealer" : "Edit Broker Dealer"}</div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             <div style={{ gridColumn: "1/-1" }}>
@@ -997,7 +999,7 @@ const FMO_BLANK = { name: "", type: "FMO", contactName: "", phone: "", email: ""
 
 function FMOCard({ item, onEdit, onDelete }) {
   return (
-    <div className="fade-in" style={{ background: C.card, border: `1px solid ${FMO_BLUE}33`, borderRadius: 12, padding: 18 }}>
+    <div className="fade-in" style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: 18 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
         <div>
           <div style={{ fontWeight: 700, fontSize: 26 }}>{item.name}</div>
@@ -1050,7 +1052,7 @@ function FMOSection({ data, setData }) {
         <ActionBtn label="+ Add FMO / IMO" color={FMO_BLUE} onClick={openNew} />
       </div>
       {editing && (
-        <div className="fade-in" style={{ background: C.navy700, border: `1px solid ${FMO_BLUE}44`, borderRadius: 12, padding: 20, marginBottom: 20 }}>
+        <div className="fade-in" style={{ background: C.navy700, border: `1px solid ${C.border}`, borderRadius: 12, padding: 20, marginBottom: 20 }}>
           <div style={{ fontWeight: 700, marginBottom: 16, color: FMO_BLUE }}>{editing === "new" ? "New FMO / IMO" : "Edit FMO / IMO"}</div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             <div style={{ gridColumn: "1/-1" }}>
@@ -1109,7 +1111,7 @@ function EditableList({ title, color, icon, items, setItems }) {
   const inputS = { background: C.navy700, border: `1px solid ${C.border}`, borderRadius: 7, padding: "7px 11px", color: C.text, fontSize: 19, outline: "none" };
 
   return (
-    <div style={{ background: C.card, border: `1px solid ${color}33`, borderRadius: 14, padding: 20 }}>
+    <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: 20 }}>
       <div style={{ fontWeight: 700, marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
         <Icon name={icon} size={20} color={color} /><span style={{ color }}>{title}</span>
         <span style={{ marginLeft: "auto", fontSize: 18, color: C.muted }}>{items.length} items</span>
@@ -1308,7 +1310,7 @@ function SettingsSection({ db, setDb }) {
           <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: 22 }}>
             <div style={{ fontWeight: 700, marginBottom: 6 }}><Icon name="upload" size={19} /> Import Data</div>
             <div style={{ fontSize: 19, color: C.muted, marginBottom: 14 }}>Restore from a previously exported JSON backup. <span style={{ color: C.red, fontWeight: 600 }}>This will overwrite all current data.</span></div>
-            <label style={{ display: "inline-block", background: C.green + "22", border: `1px solid ${C.green}55`, color: C.green,
+            <label style={{ display: "inline-block", background: C.green + "22", border: `1px solid ${C.border}`, color: C.green,
               padding: "7px 16px", borderRadius: 8, fontSize: 19, fontWeight: 700, cursor: "pointer" }}>
               Choose Backup File
               <input type="file" accept=".json" style={{ display: "none" }} onChange={e => {
@@ -1362,7 +1364,7 @@ function MarketingCard({ item, onEdit, onDelete }) {
   return (
     <div className="fade-in" style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: 18 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8, marginBottom: 8 }}>
-        <div style={{ fontWeight: 700, fontSize: 24 }}>{item.title}</div>
+        <div style={{ fontWeight: 700, fontSize: 24, fontFamily: FONT_HEAD }}>{item.title}</div>
         <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-end" }}>
           <Badge label={item.type} color={C.green} />
           <Badge label={item.status} color={mktStatusColor(item.status)} />
@@ -1429,7 +1431,7 @@ function MarketingSection({ data, setData }) {
       </div>
 
       {editing && (
-        <div className="fade-in" style={{ background: C.navy700, border: `1px solid ${C.green}44`, borderRadius: 12, padding: 20, marginBottom: 20 }}>
+        <div className="fade-in" style={{ background: C.navy700, border: `1px solid ${C.border}`, borderRadius: 12, padding: 20, marginBottom: 20 }}>
           <div style={{ fontWeight: 700, marginBottom: 16, color: C.green }}>{editing === "new" ? "New Marketing Item" : "Edit Marketing Item"}</div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             <div style={{ gridColumn: "1/-1" }}>
@@ -1487,7 +1489,7 @@ function StatsSection({ db, onNavigate }) {
   return (
     <div className="fade-in">
       {alerts.length > 0 && (
-        <div style={{ background: C.orange + "15", border: `1px solid ${C.orange}44`, borderRadius: 12, padding: 16, marginBottom: 24 }}>
+        <div style={{ background: C.orange + "15", border: `1px solid ${C.border}`, borderRadius: 12, padding: 16, marginBottom: 24 }}>
           <div style={{ fontWeight: 700, color: C.orange, marginBottom: 10, fontSize: 20 }}><Icon name="alert" size={20} /> Attention Required</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             {alerts.map((a, i) => (
@@ -1506,9 +1508,9 @@ function StatsSection({ db, onNavigate }) {
             role="button" tabIndex={0}
             onKeyDown={(e) => { if ((e.key === "Enter" || e.key === " ") && onNavigate) { e.preventDefault(); onNavigate(s.to); } }}
             title={`Go to ${s.label}`}
-            style={{ background: C.card, border: `1px solid ${s.color}55`, borderTop: `3px solid ${s.color}`, borderRadius: 8, padding: "20px 18px" }}>
+            style={{ background: C.card, border: `1px solid ${C.border}`, borderTop: `3px solid ${s.color}`, borderRadius: 8, padding: "20px 18px" }}>
             <div style={{ marginBottom: 10 }}><Icon name={s.icon} size={30} color={s.color} /></div>
-            <div style={{ fontSize: 48, fontWeight: 800, color: s.color, lineHeight: 1 }}>{s.value}</div>
+            <div style={{ fontSize: 48, fontWeight: 800, color: s.color, lineHeight: 1, fontFamily: FONT_HEAD }}>{s.value}</div>
             <div style={{ fontSize: 19, fontWeight: 700, color: C.text, marginTop: 6 }}>{s.label}</div>
             <div style={{ fontSize: 17, color: C.muted, marginTop: 3 }}>{s.sub}</div>
             <div style={{ fontSize: 18, color: s.color, marginTop: 10, fontWeight: 700 }}>Open →</div>
@@ -1533,7 +1535,7 @@ export default function AdvisorToolbox() {
 
       <div style={{ background: C.navy800, borderBottom: `3px solid ${C.accent}`, padding: "18px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
-          <div style={{ fontSize: 38, fontWeight: 700, color: C.accent, letterSpacing: "0", lineHeight: 1.1 }}>Russell Wealth Group</div>
+          <div style={{ fontSize: 38, fontWeight: 700, color: C.accent, letterSpacing: "0", lineHeight: 1.1, fontFamily: FONT_HEAD }}>Russell Wealth Group</div>
           <div style={{ fontSize: 19, color: C.text, fontWeight: 700, marginTop: 4, letterSpacing: "0.08em" }}>ADVISOR TOOLBOX</div>
         </div>
         <div style={{ textAlign: "right" }}>
