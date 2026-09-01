@@ -76,18 +76,59 @@ const normUrl = (u) => {
   return /^https?:\/\//i.test(u) ? u : "https://" + u.replace(/^\/+/, "");
 };
 
+
+// ── Professional line icons (lucide-style, stroke-based) ─────────────────────
+const ICON_PATHS = {
+  briefcase: '<path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/>',
+  landmark: '<line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/>',
+  globe: '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
+  graduation: '<path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>',
+  award: '<circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>',
+  phone: '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>',
+  gear: '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
+  fileText: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+  chart: '<line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/>',
+  megaphone: '<path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>',
+  link: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+  mail: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+  smartphone: '<rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/>',
+  building: '<rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/>',
+  folder: '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>',
+  user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  tag: '<path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/>',
+  wrench: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+  database: '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/>',
+  upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>',
+  download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
+  trash: '<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+  alert: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  clipboard: '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
+  book: '<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>',
+};
+
+function Icon({ name, size = 20, color = "currentColor", strokeWidth = 2, style }) {
+  const paths = ICON_PATHS[name];
+  if (!paths) return null;
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color}
+      strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round"
+      style={{ flexShrink: 0, verticalAlign: "-0.15em", display: "inline-block", ...style }}
+      dangerouslySetInnerHTML={{ __html: paths }} />
+  );
+}
+
 // ── Section config ────────────────────────────────────────────────────────────
 const SECTIONS = [
-  { id: "wholesalers", label: "Wholesalers & Vendors",      icon: "🤝", color: C.bannerBlue },
-  { id: "bd",          label: "Broker Dealer",              icon: "🏦", color: C.bannerRust },
-  { id: "fmo",         label: "FMO / IMO",                  icon: "🌐", color: C.bannerBlue },
-  { id: "ce_licenses", label: "CE & Licensing",             icon: "🎓", color: C.gold },
-  { id: "credentials", label: "Credentials & Designations", icon: "🏅", color: C.purple },
-  { id: "contacts",    label: "Key Contacts",               icon: "📞", color: C.teal },
-  { id: "settings",    label: "Settings",                   icon: "⚙️", color: "#5a6472" },
-  { id: "notes",       label: "Advisor Notes",              icon: "📝", color: C.bannerRust },
-  { id: "stats",       label: "Practice Overview",          icon: "📊", color: "#64748b" },
-  { id: "marketing",   label: "Marketing & Branding",       icon: "📣", color: C.green },
+  { id: "wholesalers", label: "Wholesalers & Vendors",      icon: "briefcase", color: C.bannerBlue },
+  { id: "bd",          label: "Broker Dealer",              icon: "landmark", color: C.bannerRust },
+  { id: "fmo",         label: "FMO / IMO",                  icon: "globe", color: C.bannerBlue },
+  { id: "ce_licenses", label: "CE & Licensing",             icon: "graduation", color: C.gold },
+  { id: "credentials", label: "Credentials & Designations", icon: "award", color: C.purple },
+  { id: "contacts",    label: "Key Contacts",               icon: "phone", color: C.teal },
+  { id: "settings",    label: "Settings",                   icon: "gear", color: "#5a6472" },
+  { id: "notes",       label: "Advisor Notes",              icon: "fileText", color: C.bannerRust },
+  { id: "stats",       label: "Practice Overview",          icon: "chart", color: "#64748b" },
+  { id: "marketing",   label: "Marketing & Branding",       icon: "megaphone", color: C.green },
 ];
 
 // ── Seed data ─────────────────────────────────────────────────────────────────
@@ -199,7 +240,7 @@ function ActionBtn({ label, color = C.accent, onClick, small }) {
 function Empty({ label, sub }) {
   return (
     <div style={{ textAlign: "center", padding: "48px 24px", color: C.muted }}>
-      <div style={{ fontSize: 59, marginBottom: 12 }}>📂</div>
+      <div style={{ marginBottom: 12 }}><Icon name="folder" size={48} /></div>
       <div style={{ fontWeight: 600, marginBottom: 6 }}>{label}</div>
       <div style={{ fontSize: 19 }}>{sub}</div>
     </div>
@@ -218,9 +259,9 @@ const W_BLANK = {
 };
 
 const phoneIcon = (type) => {
-  if (["Cell"].includes(type)) return "📱";
-  if (["Sales", "Sales Desk", "Marketing", "Marketing Desk", "Department"].includes(type)) return "🏢";
-  return "📞";
+  if (["Cell"].includes(type)) return "smartphone";
+  if (["Sales", "Sales Desk", "Marketing", "Marketing Desk", "Department"].includes(type)) return "building";
+  return "phone";
 };
 
 function PhoneEntry({ phone, onChange, onRemove, showRemove }) {
@@ -279,19 +320,19 @@ function WholesalerCard({ item, onEdit, onDelete }) {
         <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 8 }}>
           {phones.filter(p => p.number).map(p => (
             <div key={p.id} style={{ fontSize: 19, display: "flex", alignItems: "center", gap: 6 }}>
-              <span style={{ color: C.muted, fontSize: 17, minWidth: 72 }}>{phoneIcon(p.type)} {p.type}</span>
+              <span style={{ color: C.muted, fontSize: 17, minWidth: 96, display: "inline-flex", alignItems: "center", gap: 6 }}><Icon name={phoneIcon(p.type)} size={15} /> {p.type}</span>
               <a href={`tel:${p.number}`} style={{ color: C.teal, textDecoration: "none" }}>{fmtPhone(p.number)}</a>
             </div>
           ))}
         </div>
       )}
-      {item.email && <div style={{ fontSize: 19, marginBottom: 8 }}><a href={`mailto:${item.email}`} style={{ color: C.accent, textDecoration: "none" }}>✉ {item.email}</a></div>}
+      {item.email && <div style={{ fontSize: 19, marginBottom: 8 }}><a href={`mailto:${item.email}`} style={{ color: C.accent, textDecoration: "none" }}><Icon name="mail" size={16} /> {item.email}</a></div>}
       {(item.links || []).filter(l => l.url).length > 0 && (
         <div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 10 }}>
           {item.links.filter(l => l.url).map(l => (
             <a key={l.id} href={normUrl(l.url)} target="_blank" rel="noreferrer"
               style={{ fontSize: 19, color: C.accent, textDecoration: "none", fontWeight: 700 }}>
-              🔗 {l.title || l.url}
+              <Icon name="link" size={16} /> {l.title || l.url}
             </a>
           ))}
         </div>
@@ -547,7 +588,7 @@ function LicCard({ item, onEdit, onDelete }) {
       </div>
       <div style={{ display: "flex", gap: 16, fontSize: 18, color: C.muted, marginBottom: 10 }}>
         <span>Issued {item.issued}</span>
-        {item.expires && <span style={{ color: expiring ? C.orange : C.muted }}>Expires {item.expires}{expiring ? " ⚠️" : ""}</span>}
+        {item.expires && <span style={{ color: expiring ? C.orange : C.muted }}>Expires {item.expires}</span>}
       </div>
       {item.notes && <div style={{ fontSize: 19, color: C.muted, marginBottom: 12 }}>{item.notes}</div>}
       <div style={{ display: "flex", gap: 8 }}>
@@ -613,7 +654,7 @@ function CombinedCELicSection({ ceData, setCeData, licData, setLicData }) {
   return (
     <div>
       <div style={{ display: "flex", gap: 6, marginBottom: 22 }}>
-        {[{ id: "ce", label: "📚 CE & Education", color: C.gold }, { id: "lic", label: "📋 Licenses & E&O", color: C.green }].map(t => {
+        {[{ id: "ce", label: "CE & Education", color: C.gold }, { id: "lic", label: "Licenses & E&O", color: C.green }].map(t => {
           const on = subTab === t.id;
           return (
             <button key={t.id} onClick={() => setSubTab(t.id)}
@@ -647,7 +688,7 @@ function CredCard({ item, onEdit, onDelete }) {
         {item.issuingBody}{item.number ? ` · #${item.number}` : ""} · Earned {item.earned}
       </div>
       {item.renewalDate && <div style={{ fontSize: 18, color: duesSoon ? C.orange : C.muted, marginBottom: 10 }}>
-        Renewal due {item.renewalDate}{duesSoon ? " ⚠️" : ""}
+        Renewal due {item.renewalDate}
       </div>}
       {item.notes && <div style={{ fontSize: 19, color: C.muted, marginBottom: 12 }}>{item.notes}</div>}
       <div style={{ display: "flex", gap: 8 }}>
@@ -724,8 +765,8 @@ function ContactCard({ item, onEdit, onDelete }) {
         <Badge label={item.role} color={C.teal} />
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10, fontSize: 19, marginBottom: 10 }}>
-        {item.phone && <a href={`tel:${item.phone}`} style={{ color: C.teal, textDecoration: "none" }}>📞 {fmtPhone(item.phone)}</a>}
-        {item.email && <a href={`mailto:${item.email}`} style={{ color: C.accent, textDecoration: "none" }}>✉ {item.email}</a>}
+        {item.phone && <a href={`tel:${item.phone}`} style={{ color: C.teal, textDecoration: "none" }}><Icon name="phone" size={16} /> {fmtPhone(item.phone)}</a>}
+        {item.email && <a href={`mailto:${item.email}`} style={{ color: C.accent, textDecoration: "none" }}><Icon name="mail" size={16} /> {item.email}</a>}
       </div>
       {item.notes && <div style={{ fontSize: 19, color: C.muted, marginBottom: 12 }}>{item.notes}</div>}
       <div style={{ display: "flex", gap: 8 }}>
@@ -880,9 +921,9 @@ function BDCard({ item, onEdit, onDelete }) {
         {item.osj && <div><span style={{ color: C.muted }}>OSJ: </span>{item.osj}</div>}
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10, fontSize: 19, marginBottom: 10 }}>
-        {item.phone && <a href={`tel:${item.phone}`} style={{ color: C.teal, textDecoration: "none" }}>📞 {fmtPhone(item.phone)}</a>}
-        {item.email && <a href={`mailto:${item.email}`} style={{ color: C.accent, textDecoration: "none" }}>✉ {item.email}</a>}
-        {item.website && <a href={item.website} target="_blank" rel="noreferrer" style={{ color: BD_PINK, textDecoration: "none" }}>🔗 Website</a>}
+        {item.phone && <a href={`tel:${item.phone}`} style={{ color: C.teal, textDecoration: "none" }}><Icon name="phone" size={16} /> {fmtPhone(item.phone)}</a>}
+        {item.email && <a href={`mailto:${item.email}`} style={{ color: C.accent, textDecoration: "none" }}><Icon name="mail" size={16} /> {item.email}</a>}
+        {item.website && <a href={item.website} target="_blank" rel="noreferrer" style={{ color: BD_PINK, textDecoration: "none" }}><Icon name="link" size={16} /> Website</a>}
       </div>
       {item.notes && <div style={{ fontSize: 19, color: C.muted, marginBottom: 12 }}>{item.notes}</div>}
       <div style={{ display: "flex", gap: 8 }}>
@@ -973,9 +1014,9 @@ function FMOCard({ item, onEdit, onDelete }) {
         </div>
       )}
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10, fontSize: 19, marginBottom: 10 }}>
-        {item.phone && <a href={`tel:${item.phone}`} style={{ color: C.teal, textDecoration: "none" }}>📞 {fmtPhone(item.phone)}</a>}
-        {item.email && <a href={`mailto:${item.email}`} style={{ color: C.accent, textDecoration: "none" }}>✉ {item.email}</a>}
-        {item.website && <a href={item.website} target="_blank" rel="noreferrer" style={{ color: FMO_BLUE, textDecoration: "none" }}>🔗 Website</a>}
+        {item.phone && <a href={`tel:${item.phone}`} style={{ color: C.teal, textDecoration: "none" }}><Icon name="phone" size={16} /> {fmtPhone(item.phone)}</a>}
+        {item.email && <a href={`mailto:${item.email}`} style={{ color: C.accent, textDecoration: "none" }}><Icon name="mail" size={16} /> {item.email}</a>}
+        {item.website && <a href={item.website} target="_blank" rel="noreferrer" style={{ color: FMO_BLUE, textDecoration: "none" }}><Icon name="link" size={16} /> Website</a>}
       </div>
       {item.notes && <div style={{ fontSize: 19, color: C.muted, marginBottom: 12 }}>{item.notes}</div>}
       <div style={{ display: "flex", gap: 8 }}>
@@ -1070,7 +1111,7 @@ function EditableList({ title, color, icon, items, setItems }) {
   return (
     <div style={{ background: C.card, border: `1px solid ${color}33`, borderRadius: 14, padding: 20 }}>
       <div style={{ fontWeight: 700, marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
-        <span>{icon}</span><span style={{ color }}>{title}</span>
+        <Icon name={icon} size={20} color={color} /><span style={{ color }}>{title}</span>
         <span style={{ marginLeft: "auto", fontSize: 18, color: C.muted }}>{items.length} items</span>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 14 }}>
@@ -1145,10 +1186,10 @@ function SettingsSection({ db, setDb }) {
   );
 
   const subTabs = [
-    { id: "profile",    label: "👤 Advisor Profile" },
-    { id: "categories", label: "🏷️ Categories & Lists" },
-    { id: "app",        label: "🔧 App Preferences" },
-    { id: "data",       label: "💾 Data Management" },
+    { id: "profile",    icon: "user",     label: "Advisor Profile" },
+    { id: "categories", icon: "tag",      label: "Categories & Lists" },
+    { id: "app",        icon: "wrench",   label: "App Preferences" },
+    { id: "data",       icon: "database", label: "Data Management" },
   ];
 
   return (
@@ -1168,7 +1209,7 @@ function SettingsSection({ db, setDb }) {
               style={{ padding: "8px 18px", borderRadius: 8, border: `1px solid ${on ? C.bannerBlue : C.border}`,
                 background: on ? C.bannerBlue : "#ffffff", color: on ? "#ffffff" : C.text,
                 fontWeight: on ? 700 : 600, fontSize: 19, cursor: "pointer", transition: "all 0.15s" }}>
-              {t.label}
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}><Icon name={t.icon} size={17} />{t.label}</span>
             </button>
           );
         })}
@@ -1212,12 +1253,12 @@ function SettingsSection({ db, setDb }) {
 
       {subTab === "categories" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <EditableList title="Wholesaler Categories" color={C.accent} icon="🤝" items={db.wholesalerCategories || W_CATS_DEFAULT} setItems={(v) => setDb(p => ({ ...p, wholesalerCategories: v }))} />
-          <EditableList title="Phone Number Types" color={C.teal} icon="📞" items={db.phoneTypes || PHONE_TYPES} setItems={(v) => setDb(p => ({ ...p, phoneTypes: v }))} />
-          <EditableList title="CE Credit Types" color={C.gold} icon="🎓" items={db.ceTypes || CE_TYPES_DEFAULT} setItems={(v) => setDb(p => ({ ...p, ceTypes: v }))} />
-          <EditableList title="License Statuses" color={C.green} icon="📋" items={db.licenseStatuses || LIC_STATUSES_DEFAULT} setItems={(v) => setDb(p => ({ ...p, licenseStatuses: v }))} />
+          <EditableList title="Wholesaler Categories" color={C.accent} icon="briefcase" items={db.wholesalerCategories || W_CATS_DEFAULT} setItems={(v) => setDb(p => ({ ...p, wholesalerCategories: v }))} />
+          <EditableList title="Phone Number Types" color={C.teal} icon="phone" items={db.phoneTypes || PHONE_TYPES} setItems={(v) => setDb(p => ({ ...p, phoneTypes: v }))} />
+          <EditableList title="CE Credit Types" color={C.gold} icon="graduation" items={db.ceTypes || CE_TYPES_DEFAULT} setItems={(v) => setDb(p => ({ ...p, ceTypes: v }))} />
+          <EditableList title="License Statuses" color={C.green} icon="clipboard" items={db.licenseStatuses || LIC_STATUSES_DEFAULT} setItems={(v) => setDb(p => ({ ...p, licenseStatuses: v }))} />
           <EditableList title="Contact Roles" color={C.teal} icon="👥" items={db.contactRoles || CONT_ROLES_DEFAULT} setItems={(v) => setDb(p => ({ ...p, contactRoles: v }))} />
-          <EditableList title="FMO / IMO Types" color={FMO_BLUE} icon="🌐" items={db.fmoTypes || FMO_TYPES_DEFAULT} setItems={(v) => setDb(p => ({ ...p, fmoTypes: v }))} />
+          <EditableList title="FMO / IMO Types" color={FMO_BLUE} icon="globe" items={db.fmoTypes || FMO_TYPES_DEFAULT} setItems={(v) => setDb(p => ({ ...p, fmoTypes: v }))} />
         </div>
       )}
 
@@ -1253,7 +1294,7 @@ function SettingsSection({ db, setDb }) {
       {subTab === "data" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: 22 }}>
-            <div style={{ fontWeight: 700, marginBottom: 6 }}>📤 Export Data</div>
+            <div style={{ fontWeight: 700, marginBottom: 6 }}><Icon name="download" size={19} /> Export Data</div>
             <div style={{ fontSize: 19, color: C.muted, marginBottom: 14 }}>Download all your Advisor Toolbox data as a JSON file.</div>
             <ActionBtn label="Download JSON Backup" color={C.accent} onClick={() => {
               const blob = new Blob([JSON.stringify(db, null, 2)], { type: "application/json" });
@@ -1265,7 +1306,7 @@ function SettingsSection({ db, setDb }) {
           </div>
 
           <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: 22 }}>
-            <div style={{ fontWeight: 700, marginBottom: 6 }}>📥 Import Data</div>
+            <div style={{ fontWeight: 700, marginBottom: 6 }}><Icon name="upload" size={19} /> Import Data</div>
             <div style={{ fontSize: 19, color: C.muted, marginBottom: 14 }}>Restore from a previously exported JSON backup. <span style={{ color: C.red, fontWeight: 600 }}>This will overwrite all current data.</span></div>
             <label style={{ display: "inline-block", background: C.green + "22", border: `1px solid ${C.green}55`, color: C.green,
               padding: "7px 16px", borderRadius: 8, fontSize: 19, fontWeight: 700, cursor: "pointer" }}>
@@ -1280,7 +1321,7 @@ function SettingsSection({ db, setDb }) {
           </div>
 
           <div style={{ background: C.card, border: `1px solid ${C.red}33`, borderRadius: 14, padding: 22 }}>
-            <div style={{ fontWeight: 700, marginBottom: 6, color: C.red }}>🗑️ Clear Section Data</div>
+            <div style={{ fontWeight: 700, marginBottom: 6, color: C.red }}><Icon name="trash" size={19} /> Clear Section Data</div>
             <div style={{ fontSize: 19, color: C.muted, marginBottom: 16 }}>Permanently delete all records from a specific section. Cannot be undone.</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               {[
@@ -1332,7 +1373,7 @@ function MarketingCard({ item, onEdit, onDelete }) {
       )}
       {item.link && (
         <div style={{ marginBottom: 8 }}>
-          <a href={normUrl(item.link)} target="_blank" rel="noreferrer" style={{ fontSize: 19, color: C.accent, textDecoration: "none", fontWeight: 700 }}>🔗 Open File / Link</a>
+          <a href={normUrl(item.link)} target="_blank" rel="noreferrer" style={{ fontSize: 19, color: C.accent, textDecoration: "none", fontWeight: 700 }}><Icon name="link" size={16} /> Open File / Link</a>
         </div>
       )}
       {item.notes && <div style={{ fontSize: 19, color: C.muted, marginBottom: 12 }}>{item.notes}</div>}
@@ -1427,15 +1468,15 @@ function StatsSection({ db, onNavigate }) {
   const extW = db.wholesalers.filter(w => w.wholesalerType !== "Internal").length;
 
   const cards = [
-    { label: "Total Wholesalers & Vendors", to: "wholesalers", value: db.wholesalers.length, sub: `${intW} internal · ${extW} external`, color: C.bannerBlue, icon: "🤝" },
-    { label: "Broker Dealers", to: "bd", value: db.bd.length, sub: "on file", color: C.bannerRust, icon: "🏦" },
-    { label: "FMO / IMO Relationships", to: "fmo", value: db.fmo.length, sub: "marketing orgs", color: C.bannerBlue, icon: "🌐" },
-    { label: "CE Hours Logged", to: "ce_licenses", value: totalCE.toFixed(1), sub: `${db.ce.length} course${db.ce.length !== 1 ? "s" : ""}`, color: C.gold, icon: "🎓" },
-    { label: "Licenses & E&O", to: "ce_licenses", value: db.licenses.length, sub: db.licenses.filter(l => l.status === "Active").length + " active", color: C.green, icon: "📋" },
-    { label: "Designations", to: "credentials", value: db.credentials.length, sub: "credentials on file", color: C.purple, icon: "🏅" },
-    { label: "Key Contacts", to: "contacts", value: db.contacts.length, sub: "saved contacts", color: C.teal, icon: "📞" },
-    { label: "Advisor Notes", to: "notes", value: db.notes.length, sub: db.notes.filter(n => n.priority === "high").length + " high priority", color: C.bannerRust, icon: "📝" },
-    { label: "Marketing Materials", to: "marketing", value: (db.marketing || []).length, sub: (db.marketing || []).filter(m => m.status === "BD Approved").length + " BD approved", color: C.green, icon: "📣" },
+    { label: "Total Wholesalers & Vendors", to: "wholesalers", value: db.wholesalers.length, sub: `${intW} internal · ${extW} external`, color: C.bannerBlue, icon: "briefcase" },
+    { label: "Broker Dealers", to: "bd", value: db.bd.length, sub: "on file", color: C.bannerRust, icon: "landmark" },
+    { label: "FMO / IMO Relationships", to: "fmo", value: db.fmo.length, sub: "marketing orgs", color: C.bannerBlue, icon: "globe" },
+    { label: "CE Hours Logged", to: "ce_licenses", value: totalCE.toFixed(1), sub: `${db.ce.length} course${db.ce.length !== 1 ? "s" : ""}`, color: C.gold, icon: "graduation" },
+    { label: "Licenses & E&O", to: "ce_licenses", value: db.licenses.length, sub: db.licenses.filter(l => l.status === "Active").length + " active", color: C.green, icon: "clipboard" },
+    { label: "Designations", to: "credentials", value: db.credentials.length, sub: "credentials on file", color: C.purple, icon: "award" },
+    { label: "Key Contacts", to: "contacts", value: db.contacts.length, sub: "saved contacts", color: C.teal, icon: "phone" },
+    { label: "Advisor Notes", to: "notes", value: db.notes.length, sub: db.notes.filter(n => n.priority === "high").length + " high priority", color: C.bannerRust, icon: "fileText" },
+    { label: "Marketing Materials", to: "marketing", value: (db.marketing || []).length, sub: (db.marketing || []).filter(m => m.status === "BD Approved").length + " BD approved", color: C.green, icon: "megaphone" },
   ];
 
   const alerts = [
@@ -1447,7 +1488,7 @@ function StatsSection({ db, onNavigate }) {
     <div className="fade-in">
       {alerts.length > 0 && (
         <div style={{ background: C.orange + "15", border: `1px solid ${C.orange}44`, borderRadius: 12, padding: 16, marginBottom: 24 }}>
-          <div style={{ fontWeight: 700, color: C.orange, marginBottom: 10, fontSize: 20 }}>⚠️ Attention Required</div>
+          <div style={{ fontWeight: 700, color: C.orange, marginBottom: 10, fontSize: 20 }}><Icon name="alert" size={20} /> Attention Required</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             {alerts.map((a, i) => (
               <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 19, color: C.text }}>
@@ -1466,7 +1507,7 @@ function StatsSection({ db, onNavigate }) {
             onKeyDown={(e) => { if ((e.key === "Enter" || e.key === " ") && onNavigate) { e.preventDefault(); onNavigate(s.to); } }}
             title={`Go to ${s.label}`}
             style={{ background: C.card, border: `1px solid ${s.color}55`, borderTop: `3px solid ${s.color}`, borderRadius: 8, padding: "20px 18px" }}>
-            <div style={{ fontSize: 38, marginBottom: 8 }}>{s.icon}</div>
+            <div style={{ marginBottom: 10 }}><Icon name={s.icon} size={30} color={s.color} /></div>
             <div style={{ fontSize: 48, fontWeight: 800, color: s.color, lineHeight: 1 }}>{s.value}</div>
             <div style={{ fontSize: 19, fontWeight: 700, color: C.text, marginTop: 6 }}>{s.label}</div>
             <div style={{ fontSize: 17, color: C.muted, marginTop: 3 }}>{s.sub}</div>
@@ -1518,7 +1559,7 @@ export default function AdvisorToolbox() {
                   background: isActive ? s.color : "#ffffff",
                   color: isActive ? "#ffffff" : C.text,
                   transition: "all 0.12s", lineHeight: 1.3, textAlign: "center" }}>
-                <span style={{ fontSize: 36 }}>{s.icon}</span>
+                <Icon name={s.icon} size={30} />
                 <span>{shortLabels[s.id]}</span>
               </button>
             );
@@ -1526,7 +1567,7 @@ export default function AdvisorToolbox() {
         </div>
 
         <div className="cat-banner" style={{ marginBottom: 20, background: activeSection.color, padding: "12px 20px", display: "flex", alignItems: "center", gap: 12, fontSize: 34, boxShadow: "0 1px 2px rgba(0,0,0,0.25)" }}>
-          <span>{activeSection.icon}</span>
+          <Icon name={activeSection.icon} size={28} color="#ffffff" />
           <span>{activeSection.label}</span>
         </div>
 
